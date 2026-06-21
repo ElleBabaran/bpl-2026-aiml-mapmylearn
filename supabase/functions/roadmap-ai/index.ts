@@ -28,42 +28,49 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'roadmap') {
-      const prompt = `You are StudySprint AI. Build a highly specific learning roadmap for:
+      const prompt = `You are StudySprint AI, an expert educational planner. Build a highly descriptive, comprehensive, and highly specific learning roadmap for:
 Goal: "${goal}"
 Current student level: "${level}"
 Study time committed: ${hours} hours per week
 Target deadline: "${deadline}"
 
-Provide your response as a valid JSON array of phases. Do not wrap in markdown tags like \`\`\`json. Every phase must follow this structure:
+CRITICAL INSTRUCTIONS:
+1. DESCRIPTIVE AND SPECIFIC CONTENT: Do not generalize. Write highly detailed descriptions for the phase, topics, resources, and projects. Specify exactly what concepts to learn, what tasks to perform, and what deliverables to produce.
+2. REAL, WORKING RESOURCE LINKS: Every resource MUST have a real, functioning, high-quality URL. Never use fake domains like "example.com" or placeholders. Use real URLs of official documentation (e.g., react.dev, developer.mozilla.org, python.org, docs.python.org, docs.oracle.com), reputable tutorials (e.g., javascript.info, w3schools.com, geeksforgeeks.org), freeCodeCamp courses/videos (e.g., freecodecamp.org), Harvard CS50/MIT OpenCourseWare materials, or exact YouTube video/playlist search links (e.g., https://www.youtube.com/results?search_query=learn+react+for+beginners).
+3. DETAILED PROJECTS: Every project must have a detailed description explaining the exact deliverables, requirements, or features the student needs to build (e.g., "Build a multi-page e-commerce mockup using HTML, CSS grid/flexbox, with working local storage cart functionality, and responsive styles for mobile, tablet, and desktop").
+
+Provide your response as a valid JSON array of phases. Do not wrap in markdown code blocks or tags like \`\`\`json. Every phase must follow this structure:
 [
   {
     "phase": 1,
-    "title": "Phase Title (e.g. JavaScript Foundations)",
-    "duration": "Duration (e.g. 2 weeks)",
+    "title": "Phase Title (be specific, e.g. 'Advanced React, Hooks, & State Management')",
+    "duration": "Duration (e.g. '3 weeks')",
     "xp": 150,
-    "topics": ["Specific topic 1 to learn", "Specific topic 2 to learn"],
+    "topics": [
+      "Extremely specific topic 1 (e.g., 'React hooks lifecycle: useEffect dependency arrays, cleaning up event listeners, and custom hooks')",
+      "Extremely specific topic 2 (e.g., 'Context API vs Redux Toolkit: slice creation, reducers, and store configuration')"
+    ],
     "resources": [
       {
-        "name": "Resource Name (e.g. MDN JS Guide)",
-        "url": "https://example.com/real-resource-link",
-        "type": "free|video|interactive|docs",
-        "description": "Short summary of what this resource covers",
-        "icon": "📖|🎬|💻|🎨"
+        "name": "Exact, real resource name (e.g., 'React.dev Hooks Documentation')",
+        "url": "https://react.dev/reference/react",
+        "type": "docs",
+        "description": "A highly detailed summary of what this specific resource covers and why it is crucial for this phase (e.g., 'The official React reference detailing built-in hooks, state management APIs, and lifecycle methods with interactive code sandboxes.')",
+        "icon": "📖"
       }
     ],
     "projects": [
       {
-        "name": "Suggested Project (e.g. Build a Calculator)",
-        "description": "Short description of what the student needs to build",
+        "name": "Detailed project name",
+        "description": "Highly descriptive explanation of what the student needs to build, including the list of required features and technologies to apply.",
         "difficulty": "easy|medium|hard",
         "xp": 80,
-        "icon": "🏗️|🎮|📱"
+        "icon": "🏗️"
       }
     ]
   }
 ]
-Respond ONLY with this JSON array.`
-
+Respond ONLY with this JSON array. No conversational text.`
       const result = await callAI(prompt, geminiKey, anthropicKey)
       return new Response(result, { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 
