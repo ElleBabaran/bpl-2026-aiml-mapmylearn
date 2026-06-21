@@ -123,6 +123,67 @@ async function loadUserData() {
   }
 }
 
+// ── Handle Supabase Auth Hash Redirection ──────────────────────
+async function handleAuthRedirect() {
+  const hash = window.location.hash;
+  if (!hash) return false;
+
+  // Clear hash from URL immediately so it doesn't linger
+  window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+
+  const params = new URLSearchParams(hash.substring(1));
+  const errCode = params.get('error_code');
+  const errDesc = params.get('error_description');
+
+  if (errCode) {
+    let friendlyMsg = errDesc || 'Authentication failed.';
+    if (errCode === 'otp_expired') {
+      friendlyMsg = 'The email confirmation link has expired or has already been used. Please try logging in or signing up again.';
+    }
+    
+    // Try to find an error container on the current page
+    const errEl = document.getElementById('li-err') || document.getElementById('su-err');
+    if (errEl) {
+      showErr(errEl, friendlyMsg);
+    } else {
+      toast(friendlyMsg, 5000);
+    }
+    return false;
+  }
+
+  const accessToken = params.get('access_token');
+  const refreshToken = params.get('refresh_token');
+  if (accessToken) {
+    try {
+      const parts = accessToken.split('.');
+      if (parts.length === 3) {
+        let payloadStr = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        while (payloadStr.length % 4) payloadStr += '=';
+        const payload = JSON.parse(atob(payloadStr));
+
+        SS.currentUser = {
+          access_token: accessToken,
+          refresh_token: refreshToken || '',
+          id: payload.sub,
+          email: payload.email || ''
+        };
+        
+        saveSession(SS.currentUser);
+        await loadUserData();
+
+        // If we are NOT on dashboard.html, redirect there
+        if (!window.location.pathname.includes('dashboard.html')) {
+          window.location.href = 'dashboard.html';
+        }
+        return true;
+      }
+    } catch (e) {
+      console.error('Failed to parse auth redirect hash:', e);
+    }
+  }
+  return false;
+}
+
 // ── Session Restore (called on dashboard.html load) ──────────
 async function initDashboard() {
   // Capture pending share from URL
@@ -137,6 +198,14 @@ async function initDashboard() {
   if (sessionStorage.getItem('ss_demo') === '1') {
     sessionStorage.removeItem('ss_demo');
     demoLogin(); // demoLogin() calls renderDash() internally — do NOT call it again
+    return;
+  }
+
+  // Check for auth hash redirection first (e.g. email confirmation redirect)
+  const handled = await handleAuthRedirect();
+  if (handled) {
+    renderDash();
+    toast('Email confirmed! Welcome to StudySprint! 🌸');
     return;
   }
 
@@ -189,7 +258,11 @@ async function initDashboard() {
 }
 
 // ── Guard for index/login pages (redirect if already logged in)
-function initPublicPage() {
+async function initPublicPage() {
+  // Check for auth hash redirection (e.g. email confirmation redirect)
+  const handled = await handleAuthRedirect();
+  if (handled) return;
+
   const saved = loadSession();
   if (saved?.access_token) {
     window.location.href = 'dashboard.html';

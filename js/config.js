@@ -38,7 +38,7 @@ async function sbFetch(path, opts = {}) {
   });
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
-    throw new Error(e.message || e.error_description || 'Request failed (' + res.status + ')');
+    throw new Error(e.msg || e.message || e.error_description || e.error || 'Request failed (' + res.status + ')');
   }
   return res.status === 204 ? null : res.json();
 }
