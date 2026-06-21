@@ -4,7 +4,7 @@
 
 // ── Supabase credentials ──────────────────────────────────────
 const SUPABASE_URL = 'https://gplxbxjyvtfcgcstzisx.supabase.co';
-const ANON_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwbHhieGp5dnRmY2djc3R6aXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0NjYzNTIsImV4cCI6MjA2NTA0MjM1Mn0.xFnmzH7tNjRpjFQO_4mEWajFxqMKqaDoIfT6Kz9rqyc';
+const ANON_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwbHhieGp5dnRmY2djc3R6aXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNTI0NzEsImV4cCI6MjA5NzYyODQ3MX0.1yluvvWGusFpLOIMOLj5LuawQ6lyJgEcfEx_guCLLIo';
 
 // ── Global application state (shared across all modules) ──────
 window.SS = {
