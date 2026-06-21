@@ -34,8 +34,9 @@ function renderBarChart() {
     }
   });
 
-  // If demo or no real data, use nice-looking sample values
-  const vals = counts.some(c => c > 0) ? counts : [1, 0, 3, 1, 2, 0, 1];
+  // If demo, use nice-looking sample values. For real users, show actual 0s.
+  const isDemo = SS.currentUser?.id === 'demo';
+  const vals = (counts.some(c => c > 0) || !isDemo) ? counts : [1, 0, 3, 1, 2, 0, 1];
   const maxV = Math.max(...vals, 1);
   const todayDow = (new Date().getDay() + 6) % 7; // Mon=0
 
@@ -78,8 +79,10 @@ async function renderXpHistory() {
     }
   }
 
-  // Demo / no-data fallback
-  if (!xpByDay.some(v => v > 0)) xpByDay = [10, 0, 30, 10, 20, 0, 10];
+  // Demo fallback (only for demo user)
+  if (!xpByDay.some(v => v > 0) && SS.currentUser?.id === 'demo') {
+    xpByDay = [10, 0, 30, 10, 20, 0, 10];
+  }
 
   const maxXP = Math.max(...xpByDay, 1);
   const todayDow = (new Date().getDay() + 6) % 7;

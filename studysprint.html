@@ -778,22 +778,38 @@ function renderFullGarden(){
 }
 function renderStreak(){
   const el=document.getElementById('streak-row');if(!el)return;el.innerHTML='';
-  const streak=userProfile?.streak||3;
+  const streak=userProfile?.streak??0;
   for(let i=0;i<7;i++){const d=document.createElement('div');d.className='streak-dot'+(i<streak?' done':i===streak?' today':'');el.appendChild(d);}
 }
 
 function renderAnalytics(){
   const days=['Mo','Tu','We','Th','Fr','Sa','Su'];
-  const vals=[2,0,3,1,4,2,1];
+  const counts=new Array(7).fill(0);
+  const today=new Date();
+  tasks.filter(t=>t.done).forEach(t=>{
+    const doneDate=new Date(t.done_at||t.created_at||0);
+    const diffDays=Math.floor((today-doneDate)/86400000);
+    if(diffDays>=0&&diffDays<7){
+      const idx=6-diffDays;
+      if(idx>=0)counts[idx]++;
+    }
+  });
+  const isDemo=currentUser?.id==='demo';
+  const vals=(counts.some(c=>c>0)||!isDemo)?counts:[2,0,3,1,4,2,1];
   const bc=document.getElementById('bar-chart');if(!bc)return;bc.innerHTML='';
   const maxV=Math.max(...vals,1);
   days.forEach((d,i)=>{const col=document.createElement('div');col.className='bar-col';const h=Math.round((vals[i]/maxV)*70);col.innerHTML=`<span class="bar-val">${vals[i]}</span><div class="bar-fill" style="height:${h}px;background:${i===6?'var(--pink)':'var(--lav)'}"></div><span class="bar-lbl">${d}</span>`;bc.appendChild(col);});
-  const xpVals=[20,0,30,10,40,20,10];
+  
+  let xpVals=counts.map(c=>c*10);
+  if(!xpVals.some(v=>v>0)&&isDemo){
+    xpVals=[20,0,30,10,40,20,10];
+  }
   const xh=document.getElementById('xp-history');if(!xh)return;xh.innerHTML='';
   const maxXP=Math.max(...xpVals,1);
   days.forEach((d,i)=>{const div=document.createElement('div');div.className='xp-hist-row';const w=Math.round((xpVals[i]/maxXP)*100);div.innerHTML=`<span class="xp-hist-day">${d}</span><div class="xp-hist-bar" style="width:${w}%;"></div><span class="xp-hist-val">+${xpVals[i]}</span>`;xh.appendChild(div);});
+  
   const sc=document.getElementById('streak-cal');if(!sc)return;sc.innerHTML='';
-  const streak=userProfile?.streak||3;
+  const streak=userProfile?.streak??0;
   for(let i=0;i<28;i++){const c=document.createElement('div');const diff=27-i;c.className='s-cell'+(diff===0?' today':diff<streak?' done':'');c.innerHTML=diff===0?'📍':diff<streak?'✓':'';sc.appendChild(c);}
   document.getElementById('streak-stat').textContent='Current streak: '+streak+' days 🔥';
   const done=tasks.filter(t=>t.done).length;const total=tasks.length;const pct=total?Math.round(done/total*100):0;
@@ -804,9 +820,9 @@ function renderAnalytics(){
   const doneCnt=tasks.filter(t=>t.done).length;
   const achs=[
     {icon:'🌱',name:'FIRST STEP',desc:'Complete your first task',unlocked:doneCnt>=1},
-    {icon:'🔥',name:'ON FIRE',desc:'3-day streak',unlocked:(userProfile?.streak||3)>=3},
+    {icon:'🔥',name:'ON FIRE',desc:'3-day streak',unlocked:(userProfile?.streak??0)>=3},
     {icon:'🗺️',name:'EXPLORER',desc:'Generate your first roadmap',unlocked:roadmaps.length>=1},
-    {icon:'⭐',name:'SCHOLAR',desc:'Earn 100 XP',unlocked:(userProfile?.xp||340)>=100},
+    {icon:'⭐',name:'SCHOLAR',desc:'Earn 100 XP',unlocked:(userProfile?.xp??0)>=100},
     {icon:'🌸',name:'IN BLOOM',desc:'Complete 5 tasks',unlocked:doneCnt>=5},
     {icon:'🏆',name:'CHAMPION',desc:'Complete 10 tasks',unlocked:doneCnt>=10},
     {icon:'🤝',name:'TEAM PLAYER',desc:'Share a roadmap',unlocked:false},
