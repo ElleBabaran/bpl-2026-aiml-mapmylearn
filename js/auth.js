@@ -134,6 +134,14 @@ async function loadUserData() {
 
 // ── Session Restore (called on dashboard.html load) ──────────
 async function initDashboard() {
+  // Capture pending share from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const shareParam = urlParams.get('share');
+  if (shareParam) {
+    sessionStorage.setItem('ss_pending_share', shareParam);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   // Check for demo flag first
   if (sessionStorage.getItem('ss_demo') === '1') {
     sessionStorage.removeItem('ss_demo');
@@ -170,6 +178,22 @@ async function initDashboard() {
   }
 
   await loadUserData();
+
+  // Process imported roadmap if any
+  const pendingShare = sessionStorage.getItem('ss_pending_share');
+  if (pendingShare) {
+    sessionStorage.removeItem('ss_pending_share');
+    try {
+      const imported = JSON.parse(decodeURIComponent(escape(atob(pendingShare))));
+      if (imported && imported.goal && imported.phases) {
+        await importRoadmap(imported);
+      }
+    } catch (e) {
+      console.error('Failed to import shared roadmap:', e);
+      toast('Invalid shared roadmap link 🗺️');
+    }
+  }
+
   renderDash();
 }
 

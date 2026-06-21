@@ -574,10 +574,31 @@ async function claimProjectXP(xp, name) {
 
 // ── Share Modal ───────────────────────────────────────────────
 function openShareModal() {
-  const code = Math.random().toString(36).slice(2, 10);
-  const link = 'studysprint.app/roadmap/' + code;
+  const activeRM = SS.roadmaps[0];
+  if (!activeRM) {
+    toast('No roadmap to share! 🗺️');
+    return;
+  }
+  const rmData = {
+    goal: activeRM.goal,
+    level: activeRM.level,
+    hours_per_week: activeRM.hours_per_week,
+    deadline: activeRM.deadline,
+    phases: activeRM.phases
+  };
+  const rmStr = JSON.stringify(rmData);
+  const base64 = btoa(unescape(encodeURIComponent(rmStr)));
+  const link = window.location.origin + window.location.pathname + '?share=' + base64;
+  
   const linkEl = document.getElementById('share-link-text');
   if (linkEl) linkEl.textContent = link;
+
+  const isDemo = SS.currentUser?.id === 'demo';
+  const collabEl = document.getElementById('share-collab-section');
+  if (collabEl) collabEl.style.display = isDemo ? 'block' : 'none';
+  const tipEl = document.getElementById('share-tip-section');
+  if (tipEl) tipEl.style.display = isDemo ? 'none' : 'block';
+
   document.getElementById('share-modal')?.classList.add('show');
 }
 function closeModal() {
@@ -593,4 +614,45 @@ function copyLink() {
     localStorage.setItem('ss_shared_roadmap', '1');
     awardXP(15, 'Roadmap shared');
   }
+}
+
+async function importRoadmap(imported) {
+  if (SS.roadmaps.some(r => r.goal === imported.goal)) {
+    toast('You already have this roadmap! 🗺️');
+    return;
+  }
+
+  const rmRecord = {
+    user_id: SS.currentUser.id,
+    goal: imported.goal,
+    level: imported.level || 'Intermediate',
+    hours_per_week: parseInt(imported.hours_per_week || 8),
+    deadline: imported.deadline || '3 months',
+    phases: imported.phases,
+    stage_progress: {},
+    created_at: new Date().toISOString(),
+  };
+
+  if (SS.currentUser.id !== 'demo') {
+    try {
+      const saved = await insertRoadmap(rmRecord);
+      if (saved) SS.roadmaps.unshift(saved);
+    } catch (_) {
+      rmRecord.id = 'rm' + Date.now();
+      SS.roadmaps.unshift(rmRecord);
+    }
+  } else {
+    rmRecord.id = 'rm' + Date.now();
+    SS.roadmaps.unshift(rmRecord);
+  }
+
+  imported.phases.forEach((_, pi) => {
+    const key = 'rm-' + pi;
+    SS.rmStages[key] = { stages: 4, done: 0 };
+  });
+
+  switchTab('roadmap');
+  renderRoadmaps();
+  toast('Shared roadmap imported! 🗺️✨');
+  await awardXP(15, 'Imported shared roadmap');
 }
