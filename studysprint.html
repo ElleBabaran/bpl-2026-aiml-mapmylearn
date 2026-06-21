@@ -337,14 +337,7 @@ body{background:var(--cream);color:var(--text);font-family:var(--body);font-size
     <div class="modal-title">🤝 Share Roadmap</div>
     <div class="modal-sub">Share this link with classmates so they can follow the same roadmap and track progress together.</div>
     <div class="share-link" id="share-link-text">studysprint.app/roadmap/abc123xyz</div>
-    <div id="share-collab-section" style="margin-bottom:12px;">
-      <div style="font-family:var(--px);font-size:6px;color:var(--text3);margin-bottom:8px;letter-spacing:.1em;">CLASSMATES ON THIS ROADMAP</div>
-      <div class="collab-list">
-        <div class="collab-item"><div class="collab-ava" style="background:var(--pink);">KL</div><div class="collab-name">Kira Lim</div><span class="collab-prog">Phase 2 · 60%</span></div>
-        <div class="collab-item"><div class="collab-ava" style="background:var(--mint);">MR</div><div class="collab-name">Marco Reyes</div><span class="collab-prog">Phase 1 · 80%</span></div>
-        <div class="collab-item"><div class="collab-ava" style="background:var(--peach);">AL</div><div class="collab-name">Ana Liza Santos</div><span class="collab-prog">Phase 1 · 40%</span></div>
-      </div>
-    </div>
+    <div id="share-collab-section" style="margin-bottom:14px;display:none;"></div>
     <div id="share-tip-section" style="margin-bottom:12px;display:none;">
       <div style="font-size:12px;color:var(--text2);line-height:1.6;background:var(--cream2);padding:10px;border:2px solid var(--border);border-radius:6px;">
         💡 <strong>Tip:</strong> Classmates who open this link will instantly import this roadmap into their own StudySprint dashboard!
@@ -708,16 +701,7 @@ async function doSignup(){
 function demoLogin(){
   currentUser={access_token:ANON_KEY,id:'demo',email:'demo@studysprint.app'};
   userProfile={full_name:'Demo Student',school:'StudySprint U',xp:340,level:4,streak:3};
-  tasks=[
-    {id:'t1',user_id:'demo',name:'History Essay — WW2 causes',priority:'urgent',due_date:'2026-07-10',subject:'History',done:false,steps:[]},
-    {id:'t2',user_id:'demo',name:'Calculus Problem Set 4',priority:'urgent',due_date:'2026-07-12',subject:'Math',done:false,steps:[]},
-    {id:'t3',user_id:'demo',name:'Physics Lab Report',priority:'medium',due_date:'2026-07-18',subject:'Physics',done:false,steps:[]},
-    {id:'t4',user_id:'demo',name:'Spanish Vocabulary Quiz',priority:'medium',due_date:'2026-07-15',subject:'Spanish',done:false,steps:[]},
-    {id:'t5',user_id:'demo',name:'CS: Linked Lists',priority:'low',due_date:'2026-07-22',subject:'CS',done:false,steps:[]},
-    {id:'t6',user_id:'demo',name:'Book Report',priority:'low',due_date:'2026-06-30',subject:'English',done:true,steps:[]},
-    {id:'t7',user_id:'demo',name:'Biology Quiz Prep',priority:'medium',due_date:'2026-07-01',subject:'Biology',done:true,steps:[]},
-    {id:'t8',user_id:'demo',name:'Chemistry Worksheet',priority:'low',due_date:'2026-07-02',subject:'Chemistry',done:true,steps:[]}
-  ];
+  tasks=[];
   roadmaps=[];rmStages={};
   show('s-dash');  // show screen FIRST so all DOM elements exist
   renderDash();

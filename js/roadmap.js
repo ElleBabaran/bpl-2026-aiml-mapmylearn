@@ -415,37 +415,37 @@ function gameDevRoadmap(goal, level) {
 function genericRoadmap(goal, level, hours, deadline) {
   return [
     {
-      phase: 1, title: 'Foundations & Core Concepts', duration: '2 weeks', xp: 150,
-      topics: ['Core theory and terminology','Key frameworks and mental models','Primary resources identification','Setting up your study environment'],
+      phase: 1, title: 'Foundations & Core Concepts of ' + goal, duration: '2 weeks', xp: 150,
+      topics: ['Core theory and terminology of ' + goal,'Key frameworks and mental models','Primary resources identification','Setting up your study environment'],
       resources: [
         { name: 'Wikipedia — ' + goal, url: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(goal), type: 'free', description: 'Start with the big picture before diving into specifics', icon: '📖' },
-        { name: 'YouTube — Search: ' + goal + ' tutorial', url: 'https://www.youtube.com/results?search_query=' + encodeURIComponent(goal + ' tutorial for beginners'), type: 'video', description: 'Find highly-rated video tutorials for visual learners', icon: '🎬' },
+        { name: 'YouTube — ' + goal + ' Fundamentals', url: 'https://www.youtube.com/results?search_query=' + encodeURIComponent(goal + ' fundamentals tutorial'), type: 'video', description: 'Find highly-rated video tutorials for visual learners', icon: '🎬' },
         { name: 'Coursera — ' + goal, url: 'https://www.coursera.org/search?query=' + encodeURIComponent(goal), type: 'video', description: 'University-quality courses — many free to audit', icon: '🎓' },
       ],
       projects: [
-        { name: 'Research Summary', description: 'Write a 1-page summary of what you\'ve learned so far and your key questions', difficulty: 'easy', xp: 30, icon: '📝' },
+        { name: 'Research Summary', description: 'Write a comprehensive 1-page summary detailing the core concepts of ' + goal + ' and your key questions to explore further.', difficulty: 'easy', xp: 30, icon: '📝' },
       ],
     },
     {
-      phase: 2, title: 'Hands-On Practice', duration: '3 weeks', xp: 200,
-      topics: ['Applied exercises','Problem sets','Case studies','Peer discussion & community'],
+      phase: 2, title: 'Deep Dive & Practical Application', duration: '3 weeks', xp: 200,
+      topics: ['Applied exercises related to ' + goal,'Complex problem solving','Case studies and historical context','Peer discussion & community engagement'],
       resources: [
-        { name: 'Reddit — r/learnprogramming', url: 'https://www.reddit.com/r/learnprogramming/', type: 'free', description: 'Active community for questions, resources, and motivation', icon: '💬' },
-        { name: 'Khan Academy', url: 'https://www.khanacademy.org/', type: 'interactive', description: 'Free interactive lessons on many academic topics', icon: '🧠' },
+        { name: 'Reddit Community', url: 'https://www.reddit.com/search/?q=' + encodeURIComponent(goal), type: 'free', description: 'Active community for questions, resources, and motivation regarding ' + goal, icon: '💬' },
+        { name: 'Khan Academy or Dedicated Platform', url: 'https://www.google.com/search?q=' + encodeURIComponent(goal + ' interactive practice exercises'), type: 'interactive', description: 'Find interactive lessons and practice problems specifically for this topic.', icon: '🧠' },
       ],
       projects: [
-        { name: 'Mini Project', description: 'Apply your knowledge to solve a real problem you care about', difficulty: 'medium', xp: 70, icon: '🏗️' },
-        { name: 'Teach Someone Else', description: 'Explain your key learnings to a friend or write a blog post', difficulty: 'medium', xp: 50, icon: '👩‍🏫' },
+        { name: 'Applied Case Study / Mini Project', description: 'Apply your knowledge to analyze a real-world scenario or solve a problem directly related to ' + goal + '.', difficulty: 'medium', xp: 70, icon: '🏗️' },
+        { name: 'Teach Someone Else', description: 'Explain your key learnings about ' + goal + ' to a friend or write an insightful blog post summarizing your insights.', difficulty: 'medium', xp: 50, icon: '👩‍🏫' },
       ],
     },
     {
-      phase: 3, title: 'Mastery & Portfolio', duration: '2 weeks', xp: 250,
-      topics: ['Advanced topics','Portfolio building','Community contribution','Continuing education plan'],
+      phase: 3, title: 'Mastery & Advanced Exploration', duration: '2 weeks', xp: 250,
+      topics: ['Advanced sub-topics within ' + goal,'Portfolio or essay building','Contributing to the field or community','Continuing education plan'],
       resources: [
-        { name: 'GitHub', url: 'https://github.com/', type: 'free', description: 'Share your work, contribute to open source', icon: '🐙' },
+        { name: 'Advanced Community Portals', url: 'https://www.google.com/search?q=' + encodeURIComponent(goal + ' community forum advanced'), type: 'free', description: 'Share your work and connect with advanced practitioners or enthusiasts of ' + goal + '.', icon: '🌐' },
       ],
       projects: [
-        { name: 'Capstone Project', description: 'Build a substantial project that demonstrates your mastery — make it public!', difficulty: 'hard', xp: 120, icon: '🏆' },
+        { name: goal + ' Capstone Project', description: 'Build a substantial project or write a detailed comprehensive paper demonstrating your mastery of ' + goal + ' — and share it publicly!', difficulty: 'hard', xp: 120, icon: '🏆' },
       ],
     },
   ];

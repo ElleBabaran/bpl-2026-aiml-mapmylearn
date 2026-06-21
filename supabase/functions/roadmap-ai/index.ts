@@ -35,37 +35,42 @@ Study time committed: ${hours} hours per week
 Target deadline: "${deadline}"
 
 CRITICAL INSTRUCTIONS:
-1. DESCRIPTIVE AND SPECIFIC CONTENT: Do not generalize. Write highly detailed descriptions for the phase, topics, resources, and projects. Specify exactly what concepts to learn, what tasks to perform, and what deliverables to produce.
-2. REAL, WORKING RESOURCE LINKS: Every resource MUST have a real, functioning, high-quality URL. Never use fake domains like "example.com" or placeholders. Use real URLs of official documentation (e.g., react.dev, developer.mozilla.org, python.org, docs.python.org, docs.oracle.com), reputable tutorials (e.g., javascript.info, w3schools.com, geeksforgeeks.org), freeCodeCamp courses/videos (e.g., freecodecamp.org), Harvard CS50/MIT OpenCourseWare materials, or exact YouTube video/playlist search links (e.g., https://www.youtube.com/results?search_query=learn+react+for+beginners).
-3. DETAILED PROJECTS: Every project must have a detailed description explaining the exact deliverables, requirements, or features the student needs to build (e.g., "Build a multi-page e-commerce mockup using HTML, CSS grid/flexbox, with working local storage cart functionality, and responsive styles for mobile, tablet, and desktop").
+1. DESCRIPTIVE AND SPECIFIC CONTENT (FOR BOTH CODING AND NON-CODING GOALS): Do not generalize. Regardless of the subject (whether it's Computer Science, History, Languages, Sciences, Arts, or Business), write highly detailed descriptions for the phase, topics, resources, and projects. Specify exactly what concepts to master, what milestones to reach, and what deliverables to produce.
+2. REAL, WORKING RESOURCE LINKS: Every resource MUST have a real, functioning, high-quality URL. Never use fake domains like "example.com" or placeholders.
+   - For Coding: Use official documentation (react.dev, docs.python.org), freeCodeCamp, roadmap.sh, etc.
+   - For Science/Math: Use Khan Academy (khanacademy.org), MIT OpenCourseWare, specialized platforms, or direct YouTube search links.
+   - For History/Arts: Use reputable historical archives, Wikipedia articles (en.wikipedia.org/wiki/...), museum sites, or specific documentary video/search links.
+   - For Languages: Use official learning portals (e.g., duolingo.com, bbc.co.uk/languages), reference grammars, or direct YouTube lessons.
+   - For general search: You can use exact YouTube search results links (e.g., https://www.youtube.com/results?search_query=learn+french+conjugation).
+3. DETAILED PROJECTS / ASSIGNMENTS: Every project/exercise must have a detailed description explaining the exact requirements and what the student needs to complete (e.g., for coding: 'Build a fully responsive e-commerce mockup'; for history: 'Write a 1500-word argumentative essay analyzing the main catalyst events of WW2 with at least 3 historical citations'; for languages: 'Conduct a 5-minute conversation recording discussing your daily routine in French').
 
 Provide your response as a valid JSON array of phases. Do not wrap in markdown code blocks or tags like \`\`\`json. Every phase must follow this structure:
 [
   {
     "phase": 1,
-    "title": "Phase Title (be specific, e.g. 'Advanced React, Hooks, & State Management')",
+    "title": "Phase Title (be specific, e.g. 'Advanced React, Hooks, & State Management' OR 'European Theater & Catalyst Events of WWII')",
     "duration": "Duration (e.g. '3 weeks')",
     "xp": 150,
     "topics": [
-      "Extremely specific topic 1 (e.g., 'React hooks lifecycle: useEffect dependency arrays, cleaning up event listeners, and custom hooks')",
-      "Extremely specific topic 2 (e.g., 'Context API vs Redux Toolkit: slice creation, reducers, and store configuration')"
+      "Extremely specific topic 1 (e.g., 'React hooks lifecycle: useEffect cleanup functions' OR 'The Munich Agreement of 1938 and the policy of appeasement')",
+      "Extremely specific topic 2 (e.g., 'Context API store slice configuration' OR 'The invasion of Poland and the formal declarations of war')"
     ],
     "resources": [
       {
-        "name": "Exact, real resource name (e.g., 'React.dev Hooks Documentation')",
+        "name": "Exact, real resource name (e.g., 'React.dev Hooks Documentation' OR 'History Channel: Causes of World War II')",
         "url": "https://react.dev/reference/react",
-        "type": "docs",
-        "description": "A highly detailed summary of what this specific resource covers and why it is crucial for this phase (e.g., 'The official React reference detailing built-in hooks, state management APIs, and lifecycle methods with interactive code sandboxes.')",
-        "icon": "📖"
+        "type": "docs|free|video|interactive",
+        "description": "A highly detailed summary of what this specific resource covers and why it is crucial for this phase (e.g., 'The official React reference detailing built-in hooks' OR 'A comprehensive video overview of the geopolitical tensions leading up to the Blitzkrieg.')",
+        "icon": "📖|🎬|💻|🎨"
       }
     ],
     "projects": [
       {
-        "name": "Detailed project name",
-        "description": "Highly descriptive explanation of what the student needs to build, including the list of required features and technologies to apply.",
+        "name": "Detailed project or assignment name",
+        "description": "Highly descriptive explanation of what the student needs to build or complete, detailing the list of required deliverables and criteria.",
         "difficulty": "easy|medium|hard",
         "xp": 80,
-        "icon": "🏗️"
+        "icon": "🏗️|📝|🏁"
       }
     ]
   }

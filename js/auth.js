@@ -65,16 +65,7 @@ async function doSignup() {
 function demoLogin() {
   SS.currentUser  = { access_token: ANON_KEY, id: 'demo', email: 'demo@studysprint.app' };
   SS.userProfile  = { full_name: 'Demo Student', school: 'StudySprint U', xp: 340, level: 4, streak: 3 };
-  SS.tasks = [
-    { id:'t1', user_id:'demo', name:'History Essay — WW2 causes',   priority:'urgent', due_date:'2026-07-10', subject:'History',   done:false, steps:[] },
-    { id:'t2', user_id:'demo', name:'Calculus Problem Set 4',        priority:'urgent', due_date:'2026-07-12', subject:'Math',      done:false, steps:[] },
-    { id:'t3', user_id:'demo', name:'Physics Lab Report',            priority:'medium', due_date:'2026-07-18', subject:'Physics',   done:false, steps:[] },
-    { id:'t4', user_id:'demo', name:'Spanish Vocabulary Quiz',       priority:'medium', due_date:'2026-07-15', subject:'Spanish',   done:false, steps:[] },
-    { id:'t5', user_id:'demo', name:'CS: Linked Lists',              priority:'low',    due_date:'2026-07-22', subject:'CS',        done:false, steps:[] },
-    { id:'t6', user_id:'demo', name:'Book Report',                   priority:'low',    due_date:'2026-06-30', subject:'English',   done:true,  steps:[] },
-    { id:'t7', user_id:'demo', name:'Biology Quiz Prep',             priority:'medium', due_date:'2026-07-01', subject:'Biology',   done:true,  steps:[] },
-    { id:'t8', user_id:'demo', name:'Chemistry Worksheet',           priority:'low',    due_date:'2026-07-02', subject:'Chemistry', done:true,  steps:[] },
-  ];
+  SS.tasks = [];
   SS.roadmaps = [];
   SS.rmStages = {};
 
