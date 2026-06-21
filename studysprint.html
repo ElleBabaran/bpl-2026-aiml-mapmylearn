@@ -649,7 +649,7 @@ body{background:var(--cream);color:var(--text);font-family:var(--body);font-size
 <script>
 // ── CONFIG — replace with your own keys ──────────────────
 const SUPABASE_URL = 'https://gplxbxjyvtfcgcstzisx.supabase.co';
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwbHhieGp5dnRmY2djc3R6aXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0NjYzNTIsImV4cCI6MjA2NTA0MjM1Mn0.xFnmzH7tNjRpjFQO_4mEWajFxqMKqaDoIfT6Kz9rqyc';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwbHhieGp5dnRmY2djc3R6aXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNTI0NzEsImV4cCI6MjA5NzYyODQ3MX0.1yluvvWGusFpLOIMOLj5LuawQ6lyJgEcfEx_guCLLIo';
 
 let currentUser=null,userProfile=null,tasks=[],roadmaps=[];
 let timerOn=false,timerSec=1500,timerInt=null;
@@ -706,16 +706,19 @@ function demoLogin(){
   currentUser={access_token:ANON_KEY,id:'demo',email:'demo@studysprint.app'};
   userProfile={full_name:'Demo Student',school:'StudySprint U',xp:340,level:4,streak:3};
   tasks=[
-    {id:'t1',user_id:'demo',name:'History Essay — WW2 causes',priority:'urgent',due_date:'2026-06-22',subject:'History',done:false,steps:[]},
-    {id:'t2',user_id:'demo',name:'Calculus Problem Set 4',priority:'urgent',due_date:'2026-06-23',subject:'Math',done:false,steps:[]},
-    {id:'t3',user_id:'demo',name:'Physics Lab Report',priority:'medium',due_date:'2026-06-25',subject:'Physics',done:false,steps:[]},
-    {id:'t4',user_id:'demo',name:'Spanish Vocabulary Quiz',priority:'medium',due_date:'2026-06-24',subject:'Spanish',done:false,steps:[]},
-    {id:'t5',user_id:'demo',name:'CS: Linked Lists',priority:'low',due_date:'2026-06-27',subject:'CS',done:false,steps:[]},
-    {id:'t6',user_id:'demo',name:'Book Report',priority:'low',due_date:'2026-06-20',subject:'English',done:true,steps:[]},
-    {id:'t7',user_id:'demo',name:'Biology Quiz Prep',priority:'medium',due_date:'2026-06-22',subject:'Biology',done:true,steps:[]},
-    {id:'t8',user_id:'demo',name:'Chemistry Worksheet',priority:'low',due_date:'2026-06-19',subject:'Chemistry',done:true,steps:[]}
+    {id:'t1',user_id:'demo',name:'History Essay — WW2 causes',priority:'urgent',due_date:'2026-07-10',subject:'History',done:false,steps:[]},
+    {id:'t2',user_id:'demo',name:'Calculus Problem Set 4',priority:'urgent',due_date:'2026-07-12',subject:'Math',done:false,steps:[]},
+    {id:'t3',user_id:'demo',name:'Physics Lab Report',priority:'medium',due_date:'2026-07-18',subject:'Physics',done:false,steps:[]},
+    {id:'t4',user_id:'demo',name:'Spanish Vocabulary Quiz',priority:'medium',due_date:'2026-07-15',subject:'Spanish',done:false,steps:[]},
+    {id:'t5',user_id:'demo',name:'CS: Linked Lists',priority:'low',due_date:'2026-07-22',subject:'CS',done:false,steps:[]},
+    {id:'t6',user_id:'demo',name:'Book Report',priority:'low',due_date:'2026-06-30',subject:'English',done:true,steps:[]},
+    {id:'t7',user_id:'demo',name:'Biology Quiz Prep',priority:'medium',due_date:'2026-07-01',subject:'Biology',done:true,steps:[]},
+    {id:'t8',user_id:'demo',name:'Chemistry Worksheet',priority:'low',due_date:'2026-07-02',subject:'Chemistry',done:true,steps:[]}
   ];
-  roadmaps=[];rmStages={};renderDash();show('s-dash');toast('Demo mode! ✨');
+  roadmaps=[];rmStages={};
+  show('s-dash');  // show screen FIRST so all DOM elements exist
+  renderDash();
+  toast('Demo mode! ✨ Explore all features freely.');
 }
 function doLogout(){currentUser=null;userProfile=null;tasks=[];roadmaps=[];rmStages={};show('s-land');toast('See you soon! 👋');}
 
@@ -827,17 +830,21 @@ async function addTask(){
   document.getElementById('t-name').value='';document.getElementById('t-subj').value='';
   renderTasks();renderMiniGarden();renderFullGarden();
   const box=document.getElementById('ai-box');const res=document.getElementById('ai-result');const dots=document.getElementById('ai-dots');
+  if(!box)return;
   box.classList.add('show');res.innerHTML='';dots.style.display='flex';
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:`Break this student assignment into 4-5 concrete steps: "${name}" (subject: ${subj}, priority: ${prio}). JSON array only: [{"step":"..."}]`}]})});
-    const d=await r.json();const raw=d.content.map(x=>x.text||'').join('');
-    const steps=JSON.parse(raw.replace(/```json|```/g,'').trim());
-    dots.style.display='none';
-    res.innerHTML=`<div class="ai-header-px">🤖 breakdown — ${name}</div>`+steps.map((s,i)=>`<div class="ai-step"><span class="step-badge">0${i+1}</span><span>${s.step}</span></div>`).join('');
-  }catch(e){
-    dots.style.display='none';
-    res.innerHTML=`<div class="ai-header-px">🤖 breakdown — ${name}</div>`+getFallback(name).map((s,i)=>`<div class="ai-step"><span class="step-badge">0${i+1}</span><span>${s}</span></div>`).join('');
+  let steps=null;
+  // Try Supabase Edge Function first (avoids CORS, keeps API key secure)
+  if(currentUser?.id!=='demo'){
+    try{
+      const token=currentUser?.access_token||ANON_KEY;
+      const r=await fetch(SUPABASE_URL+'/functions/v1/roadmap-ai',{method:'POST',headers:{'Content-Type':'application/json','apikey':ANON_KEY,'Authorization':'Bearer '+token},body:JSON.stringify({action:'breakdown',name,subj,prio})});
+      if(r.ok){const d=await r.json();if(Array.isArray(d)&&d.length)steps=d;}
+    }catch(_){}
   }
+  // Smart rule-based fallback (always works, no API needed)
+  if(!steps||!steps.length)steps=getFallback(name,subj);
+  dots.style.display='none';
+  res.innerHTML=`<div class="ai-header-px">🤖 breakdown — ${escHtml(name)}</div>`+steps.map((s,i)=>`<div class="ai-step"><span class="step-badge">0${i+1}</span><span>${escHtml(typeof s==='object'?s.step||s:s)}</span></div>`).join('');
 }
 
 async function toggleTask(id){
@@ -849,7 +856,42 @@ async function toggleTask(id){
 }
 
 function setFocus(id){const t=tasks.find(x=>x.id===id);if(!t)return;document.getElementById('f-task').textContent=t.name;resetTimer();toast('Focus set ⏱️');}
-function getFallback(name){const n=name.toLowerCase();if(n.includes('essay')||n.includes('report'))return['Brainstorm and outline','Write intro first','Draft body sections','Add citations','Proofread and submit'];if(n.includes('quiz')||n.includes('exam'))return['Review your notes','Create summary sheet','Practice problems','Self-test','Rest before exam'];return['Break into smaller parts','Start easiest section','Work in 25-min sessions','Review before finishing','Submit ahead of deadline'];}
+function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function getFallback(name,subj){
+  const n=(name||'').toLowerCase();const s=(subj||'').toLowerCase();
+  if(n.includes('essay')||n.includes('report')||n.includes('paper'))return['Brainstorm your main argument and create a quick outline','Research and gather 3–5 credible sources','Write the introduction and thesis statement','Draft body paragraphs with evidence and examples','Write conclusion, add citations, then proofread carefully'];
+  if(n.includes('quiz')||n.includes('test')||n.includes('exam')||n.includes('midterm')||n.includes('final'))return['Review lecture notes and highlight key concepts','Summarise each topic on a single flashcard','Work through past papers or practice problems','Identify weak areas and revisit them','Get a good night\'s sleep and eat before the exam'];
+  if(n.includes('lab')||n.includes('experiment'))return['Read the procedure fully before starting','Set up equipment and record baseline measurements','Carry out the experiment and log observations','Analyse data and identify any anomalies','Write up results, discussion, and conclusion'];
+  if(n.includes('presentation')||n.includes('slides')||n.includes('speech'))return['Define your 3 core messages for the audience','Create a clear slide structure: intro → points → conclusion','Design slides with minimal text and strong visuals','Practise out loud at least twice','Prepare answers to likely audience questions'];
+  if(s.includes('math')||s.includes('calculus')||s.includes('statistics'))return['Review relevant formulas and theorem statements','Work through textbook examples step-by-step','Solve 5–10 practice problems without looking at solutions','Check your work and identify mistakes','Re-do any problems you got wrong once more'];
+  if(s.includes('cs')||s.includes('code')||s.includes('programming')||n.includes('code')||n.includes('program'))return['Understand the problem fully before writing any code','Write pseudocode or draw a diagram of your approach','Implement a minimal working solution','Test with edge cases (empty input, large values, etc.)','Refactor for clarity and add comments'];
+  if(s.includes('history')||s.includes('social'))return['Identify key dates, events, and people involved','Organise a cause-and-effect timeline','Write a brief summary of each major theme','Practise writing short paragraph answers','Review with someone else or self-quiz'];
+  return['Schedule a dedicated time slot in your calendar','Break the task into smaller concrete actions','Complete the hardest or most important part first','Review your work against any given rubric or checklist','Submit or deliver with time to spare'];
+}
+function getRoadmapFallback(goal,level,hours,deadline){
+  const g=goal.toLowerCase();
+  if(g.includes('react')||g.includes('vue')||g.includes('angular')||g.includes('html')||g.includes('css')||g.includes('javascript')||g.includes('web')){
+    return[
+      {phase:1,title:'Web Foundations',duration:'3 weeks',xp:150,topics:['HTML5 semantics','CSS Flexbox & Grid','JavaScript ES2020+'],resources:[{name:'The Odin Project',url:'https://www.theodinproject.com',type:'free',description:'The best free full-stack web curriculum',icon:'📖'},{name:'MDN Web Docs',url:'https://developer.mozilla.org',type:'docs',description:'Official HTML/CSS/JS reference',icon:'📚'},{name:'freeCodeCamp',url:'https://www.freecodecamp.org',type:'interactive',description:'Hands-on coding challenges',icon:'💻'}],projects:[{name:'Personal Portfolio Page',description:'Build and deploy your own portfolio site',difficulty:'easy',xp:40,icon:'🏗️'}]},
+      {phase:2,title:'React & Modern JS',duration:'4 weeks',xp:200,topics:['React components & hooks','State management','API fetching'],resources:[{name:'React Docs (react.dev)',url:'https://react.dev',type:'docs',description:'Official React documentation with interactive examples',icon:'⚛️'},{name:'JavaScript.info',url:'https://javascript.info',type:'free',description:'Modern JavaScript from the basics',icon:'📖'}],projects:[{name:'Todo App with React',description:'Build a full CRUD todo app with local storage',difficulty:'medium',xp:60,icon:'✅'}]},
+      {phase:3,title:'Full-Stack & Deployment',duration:'3 weeks',xp:250,topics:['Node.js basics','REST APIs','Deployment (Vercel/Netlify)'],resources:[{name:'roadmap.sh',url:'https://roadmap.sh/frontend',type:'free',description:'Visual frontend developer roadmap',icon:'🗺️'}],projects:[{name:'Full-Stack Web App',description:'Build and deploy a complete app with a backend API',difficulty:'hard',xp:100,icon:'🚀'}]}
+    ];
+  }
+  if(g.includes('python')||g.includes('data')||g.includes('machine learning')||g.includes('ml')||g.includes('ai')){
+    return[
+      {phase:1,title:'Python Fundamentals',duration:'3 weeks',xp:150,topics:['Python syntax','Data types','Functions & OOP'],resources:[{name:'Python.org Tutorial',url:'https://docs.python.org/3/tutorial/',type:'docs',description:'Official Python tutorial',icon:'🐍'},{name:'freeCodeCamp Python',url:'https://www.freecodecamp.org/learn/scientific-computing-with-python/',type:'free',description:'Scientific computing with Python',icon:'💻'}],projects:[{name:'Data Analysis Script',description:'Analyse a CSV dataset and produce insights',difficulty:'easy',xp:40,icon:'📊'}]},
+      {phase:2,title:'Data Science with Pandas & NumPy',duration:'4 weeks',xp:200,topics:['Pandas DataFrames','NumPy arrays','Data visualisation'],resources:[{name:'Kaggle Learn',url:'https://www.kaggle.com/learn',type:'interactive',description:'Free micro-courses on data science',icon:'🏆'},{name:'fast.ai',url:'https://www.fast.ai',type:'free',description:'Practical deep learning for coders',icon:'🤖'}],projects:[{name:'Data Visualisation Dashboard',description:'Build interactive charts from real data',difficulty:'medium',xp:60,icon:'📈'}]},
+      {phase:3,title:'Machine Learning',duration:'5 weeks',xp:300,topics:['Scikit-learn','Model training & evaluation','Neural network basics'],resources:[{name:'Coursera ML Specialisation',url:'https://www.coursera.org/specializations/machine-learning-introduction',type:'video',description:'Andrew Ng\'s legendary ML course',icon:'🎬'}],projects:[{name:'ML Classification Project',description:'Train a model to solve a real prediction problem',difficulty:'hard',xp:100,icon:'🧠'}]}
+    ];
+  }
+  // Generic 3-phase fallback
+  const q=encodeURIComponent(goal);
+  return[
+    {phase:1,title:'Foundations',duration:'2–3 weeks',xp:150,topics:['Core concepts','Key terminology','Getting set up'],resources:[{name:'YouTube: '+goal+' for beginners',url:'https://www.youtube.com/results?search_query='+q+'+tutorial+for+beginners',type:'video',description:'Video tutorials to get you started',icon:'🎬'},{name:'Coursera: '+goal,url:'https://www.coursera.org/search?query='+q,type:'free',description:'Structured courses from top universities',icon:'🎓'}],projects:[{name:'Starter Project',description:'Apply your foundational knowledge in a small hands-on project',difficulty:'easy',xp:40,icon:'🏗️'}]},
+    {phase:2,title:'Core Skills',duration:'3–4 weeks',xp:200,topics:['Intermediate techniques','Common patterns','Best practices'],resources:[{name:'Wikipedia: '+goal,url:'https://en.wikipedia.org/wiki/'+q,type:'docs',description:'Overview and reference material',icon:'📚'}],projects:[{name:'Practice Project',description:'Build something more complex using your growing skill set',difficulty:'medium',xp:60,icon:'🔧'}]},
+    {phase:3,title:'Advanced & Real-World Application',duration:'3–4 weeks',xp:250,topics:['Advanced topics','Real projects','Portfolio building'],resources:[{name:'GitHub Topics: '+goal,url:'https://github.com/topics/'+q.replace(/%20/g,'-'),type:'free',description:'Open source projects to study and contribute to',icon:'💻'}],projects:[{name:'Capstone Project',description:'Build a complete project you can add to your portfolio',difficulty:'hard',xp:100,icon:'🚀'}]}
+  ];
+}
 function toggleTimer(){const btn=document.getElementById('f-btn');if(timerOn){clearInterval(timerInt);timerOn=false;btn.textContent='resume';}else{timerOn=true;btn.textContent='pause';timerInt=setInterval(()=>{timerSec--;if(timerSec<=0){timerSec=0;clearInterval(timerInt);timerOn=false;btn.textContent='done! ✓';toast('Session done! Rest now 🌸');}const m=Math.floor(timerSec/60),s=timerSec%60;document.getElementById('f-timer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;},1000);}}
 function resetTimer(){clearInterval(timerInt);timerOn=false;timerSec=1500;const d=document.getElementById('f-timer');if(d)d.textContent='25:00';const b=document.getElementById('f-btn');if(b)b.textContent='start';}
 
@@ -863,34 +905,28 @@ async function generateRoadmap(){
   document.getElementById('rm-loading').style.display='block';
   document.getElementById('rm-empty').style.display='none';
   document.getElementById('rm-list').innerHTML='';
+  let phases=null;
+  // Try Supabase Edge Function first (secure, no CORS issues)
+  if(currentUser?.id!=='demo'){
+    try{
+      const token=currentUser?.access_token||ANON_KEY;
+      const r=await fetch(SUPABASE_URL+'/functions/v1/roadmap-ai',{method:'POST',headers:{'Content-Type':'application/json','apikey':ANON_KEY,'Authorization':'Bearer '+token},body:JSON.stringify({action:'roadmap',goal,level,hours:parseInt(hours),deadline})});
+      if(r.ok){const d=await r.json();if(Array.isArray(d)&&d.length)phases=d;}
+    }catch(_){}
+  }
+  // Smart rule-based fallback (always works offline)
+  if(!phases||!phases.length)phases=getRoadmapFallback(goal,level,hours,deadline);
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:`Create a student learning roadmap.
-Goal: "${goal}" | Level: ${level} | Hours/week: ${hours} | Deadline: ${deadline}
-
-Return ONLY a JSON array of 3-5 phases. Each phase:
-{
-  "phase": 1,
-  "title": "Phase title",
-  "duration": "e.g. 2 weeks",
-  "xp": 150,
-  "topics": ["topic1","topic2","topic3"],
-  "resources": [
-    {"name":"Resource name","url":"https://real-url.com","type":"free|video|interactive|docs","description":"Why this is great","icon":"📖"}
-  ],
-  "projects": [
-    {"name":"Project name","description":"What to build and why","difficulty":"easy|medium|hard","xp":50,"icon":"🏗️"}
-  ]
-}
-
-Use REAL URLs (MDN, freeCodeCamp, The Odin Project, JavaScript.info, roadmap.sh, Scrimba, CS50, Khan Academy, official docs, YouTube). 3-4 resources per phase. 2-3 projects per phase. JSON only, no markdown.`}]})});
-    const data=await r.json();
-    const raw=data.content.map(x=>x.text||'').join('');
-    const phases=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const rmRecord={user_id:currentUser.id,goal,level,hours_per_week:parseInt(hours),deadline,phases,created_at:new Date().toISOString()};
     if(currentUser.id!=='demo'){try{const s=await insertRoadmap(rmRecord);if(s)roadmaps.unshift(s);}catch(e){}}
     else{rmRecord.id='rm'+Date.now();roadmaps.unshift(rmRecord);}
     rmStages={};renderRoadmapPhases(goal,phases);toast('Roadmap generated! 🗺️✨');
-  }catch(e){document.getElementById('rm-empty').style.display='block';document.getElementById('rm-empty').querySelector('.empty-d').textContent='Error: '+(e.message||'Try again.');}
+    if(userProfile){userProfile.xp=(userProfile.xp||0)+20;const xb=document.getElementById('xp-bar');const xc=document.getElementById('xp-cur');if(xb)xb.style.width=Math.min(100,(userProfile.xp%500)/500*100)+'%';if(xc)xc.textContent=userProfile.xp%500;showXpPop('+20 XP! Roadmap created 🗺️');}
+  }catch(e){
+    document.getElementById('rm-empty').style.display='block';
+    const ed=document.getElementById('rm-empty').querySelector('.empty-d');
+    if(ed)ed.textContent='Something went wrong. Please try again.';
+  }
   finally{btn.disabled=false;document.getElementById('rm-loading').style.display='none';}
 }
 
