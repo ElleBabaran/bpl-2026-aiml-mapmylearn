@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --cream:#fdf6f0;--cream2:#fef9f5;
+  --pink:#ffb3d1;--pink2:#ff8fb8;--pink-pale:#fff0f7;--pink-border:#ffd6ea;
+  --lav:#c9b8ff;--lav2:#9b8af7;--lav-pale:#f3f0ff;--lav-border:#ddd6fe;
+  --mint:#a8f0d8;--mint2:#4ecba0;--mint-pale:#edfff9;--mint-border:#b8f0df;
+  --peach:#ffcba4;--yellow:#ffe999;--yellow2:#ffd84a;
+  --text:#3d2c4e;--text2:#7a6590;--text3:#b8a8cc;
+  --border:#eedfe8;--border2:#e0cce8;--white:#ffffff;
+  --danger:#ff6b6b;--warn:#ffc23a;
+  --px:'Press Start 2P',monospace;--body:'Inter',sans-serif;
+}
+body{background:var(--cream);color:var(--text);font-family:var(--body);font-size:14px;overflow-x:hidden;}
+.screen{display:none;animation:fadeIn .2s ease;}.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.px-btn{
+  background:var(--lav);border:3px solid var(--text);box-shadow:3px 3px 0 var(--text);
+  padding:9px 18px;font-family:var(--px);font-size:7px;color:var(--text);
+  cursor:pointer;transition:transform .08s,box-shadow .08s;display:inline-flex;align-items:center;gap:6px;line-height:1.5;
+}
+.px-btn:hover{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--text);}
+.px-btn:active{transform:translate(3px,3px);box-shadow:none;}
+.px-btn.pink{background:var(--pink);}
+.px-btn.mint{background:var(--mint);}
+.px-btn.yellow{background:var(--yellow);}
+.px-btn.ghost{background:var(--white);}
+.px-btn.sm{padding:6px 11px;font-size:6px;}
+.px-btn.xs{padding:4px 8px;font-size:5px;}
+.px-btn.peach{background:var(--peach);}
+.px-btn:disabled{opacity:.5;pointer-events:none;}
+.px-input{background:var(--white);border:3px solid var(--text);padding:9px 13px;font-family:var(--body);font-size:13px;color:var(--text);outline:none;width:100%;transition:box-shadow .1s;}
+.px-input:focus{box-shadow:3px 3px 0 var(--lav2);}
+.px-input::placeholder{color:var(--text3);}
+.px-select{background:var(--white);border:3px solid var(--text);padding:8px 12px;font-family:var(--body);font-size:13px;color:var(--text);outline:none;}
+.px-badge{font-family:var(--px);font-size:5px;padding:3px 6px;border:2px solid;}
+.b-red{background:#ffe0e0;border-color:#ff7070;color:#cc0000;}
+.b-yellow{background:#fff8d6;border-color:#f0c000;color:#7a5a00;}
+.b-green{background:var(--mint-pale);border-color:var(--mint2);color:#0a6640;}
+.b-lav{background:var(--lav-pale);border-color:var(--lav2);color:#4a2ab0;}
+.b-pink{background:var(--pink-pale);border-color:var(--pink2);color:#a0004a;}
+
+#toast{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--white);border:3px solid var(--text);box-shadow:4px 4px 0 var(--text);padding:11px 16px;font-family:var(--px);font-size:7px;color:var(--text);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;max-width:240px;line-height:1.8;transform:translateY(8px);}
+#toast.show{opacity:1;transform:translateY(0);}
+.xp-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);z-index:9998;background:var(--lav-pale);border:3px solid var(--lav2);box-shadow:4px 4px 0 var(--lav2);padding:16px 24px;font-family:var(--px);font-size:10px;color:var(--lav2);text-align:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;line-height:1.8;}
+.xp-pop.show{opacity:1;transform:translate(-50%,-70%);}
+
+/* LANDING */
+.land{background:var(--cream);min-height:700px;}
+.land-nav{background:var(--white);border-bottom:3px solid var(--text);padding:13px 28px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:34px;height:34px;background:var(--lav);border:3px solid var(--text);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.brand-name{font-family:var(--px);font-size:8px;color:var(--text);}
+.hero{padding:50px 32px 40px;text-align:center;border-bottom:3px solid var(--border);}
+.hero-deco{font-size:26px;display:inline-block;animation:float 2.4s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.blink-dot{width:7px;height:7px;background:var(--pink2);display:inline-block;animation:blink 1.2s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;background:var(--pink-pale);border:2px solid var(--pink2);padding:5px 14px;font-family:var(--px);font-size:7px;color:var(--pink2);margin-bottom:18px;}
+.hero-h{font-family:var(--px);font-size:16px;color:var(--text);line-height:1.9;margin-bottom:12px;}
+.hero-h .hi{color:var(--lav2);}
+.hero-sub{font-size:14px;color:var(--text2);line-height:1.8;max-width:400px;margin:0 auto 26px;}
+.hero-btns{display:flex;gap:12px;justify-content:center;margin-bottom:40px;flex-wrap:wrap;}
+.preview-wrap{max-width:480px;margin:0 auto;background:var(--white);border:3px solid var(--text);box-shadow:6px 6px 0 var(--text);}
+.preview-bar{background:var(--lav);border-bottom:3px solid var(--text);padding:7px 13px;display:flex;align-items:center;gap:8px;}
+.p-dot{width:10px;height:10px;border:2px solid var(--text);}
+.preview-url{flex:1;background:var(--white);border:2px solid var(--text);padding:3px 10px;font-family:var(--px);font-size:5px;color:var(--text2);text-align:center;}
+.preview-body{padding:13px;}
+.prev-task{display:flex;align-items:center;gap:9px;padding:8px 11px;margin-bottom:6px;border:2px solid var(--border2);background:var(--cream2);}
+.px-check{width:17px;height:17px;border:3px solid var(--text);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.px-check.done{background:var(--mint);}
+.feat-section{padding:36px 32px;background:var(--cream2);border-bottom:3px solid var(--border);}
+.feat-head{text-align:center;margin-bottom:24px;}
+.feat-tag{font-family:var(--px);font-size:7px;color:var(--lav2);margin-bottom:7px;}
+.feat-h{font-family:var(--px);font-size:10px;color:var(--text);line-height:1.9;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:620px;margin:0 auto;}
+.feat-card{background:var(--white);border:3px solid var(--text);box-shadow:3px 3px 0 var(--text);padding:14px;}
+.feat-icon{font-size:20px;margin-bottom:7px;}
+.feat-t{font-family:var(--px);font-size:6px;color:var(--text);margin-bottom:5px;line-height:1.6;}
+.feat-d{font-size:12px;color:var(--text2);line-height:1.7;}
+
+/* AUTH */
+.auth-wrap{min-height:700px;display:grid;grid-template-columns:1fr 1fr;}
+.auth-left{background:var(--lav);border-right:3px solid var(--text);padding:40px 34px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+.auth-deco{position:absolute;font-size:80px;opacity:.12;}
+.auth-right{background:var(--cream);padding:36px 34px;display:flex;flex-direction:column;justify-content:center;}
+.auth-h{font-family:var(--px);font-size:11px;color:var(--text);line-height:1.9;margin-bottom:5px;}
+.auth-sub{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:18px;}
+.form-lbl{font-family:var(--px);font-size:6px;color:var(--text);margin-bottom:5px;display:block;}
+.form-grp{margin-bottom:11px;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.divider{display:flex;align-items:center;gap:10px;margin:13px 0;}
+.divider-line{flex:1;height:2px;background:var(--border2);}
+.divider-txt{font-family:var(--px);font-size:6px;color:var(--text3);}
+.auth-switch{font-size:12px;color:var(--text2);margin-top:13px;text-align:center;}
+.auth-switch span{color:var(--lav2);cursor:pointer;}
+.testimonial{background:var(--white);border:3px solid var(--text);box-shadow:3px 3px 0 var(--text);padding:13px;margin-top:18px;}
+.test-text{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:9px;font-style:italic;}
+.test-author{display:flex;align-items:center;gap:9px;}
+.test-ava{width:28px;height:28px;background:var(--peach);border:2px solid var(--text);display:flex;align-items:center;justify-content:center;font-family:var(--px);font-size:6px;}
+.test-name{font-family:var(--px);font-size:6px;color:var(--text);margin-bottom:2px;}
+.test-role{font-size:10px;color:var(--text3);}
+.feat-check-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:2px solid rgba(255,255,255,.3);font-size:13px;color:var(--text);}
+.feat-check-row:last-child{border-bottom:none;}
+.feat-chk{width:19px;height:19px;background:var(--mint);border:2px solid var(--text);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+
+/* DASHBOARD */
+.dash{display:flex;min-height:700px;background:var(--cream);}
+.dash-sidebar{width:190px;background:var(--white);border-right:3px solid var(--text);display:flex;flex-direction:column;flex-shrink:0;}
+.sidebar-top{padding:13px;border-bottom:3px solid var(--border);}
+.user-card{background:var(--lav-pale);border:3px solid var(--lav2);box-shadow:2px 2px 0 var(--lav2);padding:10px;margin-bottom:9px;}
+.user-ava{width:32px;height:32px;background:var(--lav);border:3px solid var(--text);display:flex;align-items:center;justify-content:center;font-family:var(--px);font-size:7px;margin-bottom:6px;}
+.user-name-px{font-family:var(--px);font-size:6px;color:var(--text);margin-bottom:2px;line-height:1.7;}
+.user-lvl{font-size:10px;color:var(--lav2);}
+.xp-wrap{margin-top:7px;}
+.xp-lbl{font-family:var(--px);font-size:5px;color:var(--text3);margin-bottom:3px;}
+.xp-track{height:7px;background:var(--cream);border:2px solid var(--text);overflow:hidden;}
+.xp-fill{height:100%;background:var(--lav);transition:width .5s;}
+.xp-nums{display:flex;justify-content:space-between;margin-top:2px;}
+.xp-n{font-size:10px;color:var(--text3);}
+.sidebar-nav{padding:7px 0;flex:1;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 13px;font-size:12px;color:var(--text2);cursor:pointer;border-left:4px solid transparent;transition:all .12s;}
+.nav-item:hover{background:var(--cream2);color:var(--text);}
+.nav-item.active{color:var(--text);border-left-color:var(--lav2);background:var(--lav-pale);font-weight:600;}
+.nav-badge{margin-left:auto;background:var(--pink);border:2px solid var(--text);font-family:var(--px);font-size:5px;color:var(--text);padding:2px 5px;}
+.garden-side{padding:11px 13px;border-top:3px solid var(--border);}
+.g-lbl{font-family:var(--px);font-size:5px;color:var(--text3);margin-bottom:6px;letter-spacing:.1em;}
+.g-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;}
+.gm-c{aspect-ratio:1;border:2px solid var(--border2);background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:12px;}
+.gm-c.has{background:var(--mint-pale);border-color:var(--mint2);}
+.dash-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--white);border-bottom:3px solid var(--text);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-g{font-family:var(--px);font-size:8px;color:var(--text);line-height:1.6;margin-bottom:2px;}
+.topbar-d{font-size:11px;color:var(--text3);}
+.topbar-r{display:flex;gap:7px;align-items:center;}
+.icon-btn{background:var(--white);border:3px solid var(--text);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:background .12s;}
+.icon-btn:hover{background:var(--cream2);}
+.dash-tabs{display:flex;background:var(--white);border-bottom:3px solid var(--text);}
+.dash-tab{flex:1;padding:10px;font-family:var(--px);font-size:5px;color:var(--text3);cursor:pointer;text-align:center;border-bottom:3px solid transparent;transition:all .12s;line-height:1.7;}
+.dash-tab:hover{background:var(--cream2);color:var(--text2);}
+.dash-tab.active{color:var(--text);border-bottom-color:var(--lav2);background:var(--lav-pale);}
+.dash-body{padding:14px 18px;flex:1;overflow-y:auto;}
+.tab-view{display:none;animation:fadeIn .18s ease;}.tab-view.active{display:block;}
+
+/* TASKS */
+.alert-box{background:var(--pink-pale);border:3px solid var(--pink2);box-shadow:3px 3px 0 var(--pink2);padding:10px 13px;display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;}
+.alert-title{font-family:var(--px);font-size:6px;color:var(--pink2);margin-bottom:3px;line-height:1.6;}
+.alert-msg{font-size:12px;color:var(--text2);line-height:1.7;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px;}
+.stat-card{background:var(--white);border:3px solid var(--text);box-shadow:3px 3px 0 var(--text);padding:12px;}
+.stat-num{font-family:var(--px);font-size:16px;line-height:1;margin-bottom:4px;}
+.stat-lbl{font-size:11px;color:var(--text3);}
+.two-col{display:grid;grid-template-columns:1fr 230px;gap:13px;}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.sec-t{font-family:var(--px);font-size:7px;color:var(--text);line-height:1.6;}
+.add-box{background:var(--white);border:3px solid var(--text);box-shadow:3px 3px 0 var(--text);padding:13px;margin-bottom:12px;}
+.add-row{display:flex;gap:7px;margin-bottom:8px;}
+.add-row:last-child{margin-bottom:0;}
+.task-item{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;margin-bottom:6px;background:var(--white);border:2px solid var(--border2);border-left:4px solid var(--border2);transition:all .12s;}
+.task-item:hover{border-color:var(--text);transform:translateX(2px);}
+.task-item.urgent{border-left-color:#ff7070;}
+.task-item.medium{border-left-color:var(--yellow2);}
+.task-item.low{border-left-color:var(--mint2);}
+.task-cb{width:17px;height:17px;border:3px solid var(--text);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;margin-top:2px;transition:background .12s;}
+.task-cb.done{background:var(--mint);}
+.task-nm{font-size:13px;color:var(--text);margin-bottom:3px;}
+.task-nm.done{text-decoration:line-through;color:var(--text3);}
+.task-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.task-dt{font-size:11px;color:var(--text3);}
+.ai-panel{background:var(--lav-pale);border:3px solid var(--lav2);box-shadow:3px 3px 0 var(--lav2);padding:12px;margin-bottom:11px;display:none;}
+.ai-panel.show{display:block;}
+.ai-dots{display:flex;gap:5px;margin-bottom:8px;}
+.ai-dot{width:8px;height:8px;background:var(--lav2);animation:bounce .9s ease-in-out infinite;}
+.ai-dot:nth-child(2){animation-delay:.15s;}.ai-dot:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-5px);}}
+.ai-header-px{font-family:var(--px);font-size:6px;color:var(--lav2);margin-bottom:7px;line-height:1.7;}
+.ai-step{display:flex;align-items:flex-start;gap:7px;margin-bottom:5px;font-size:12px;color:var(--text2);}
+.step-badge{font-family:var(--px);font-size:5px;background:var(--lav);border:2px solid var(--text);padding:2px 5px;flex-shrink:0;margin-top:1px;}
+.focus-card{background:var(--lav-pale);border:3px solid var(--lav2);box-shadow:3px 3px 0 var(--lav2);padding:13px;margin-bottom:11px;}
+.focus-lbl{font-family:var(--px);font-size:5px;color:var(--lav2);margin-bottom:6px;letter-spacing:.1em;}
+.timer-num{font-family:var(--px);font-size:20px;color:var(--text);line-height:1;margin-bottom:4px;}
+.timer-task{font-size:11px;color:var(--text2);margin-bottom:9px;line-height:1.5;}
+.timer-btns{display:flex;gap:6px;}
+.insight-card{background:var(--pink-pale);border:3px solid var(--pink-border);padding:12px;margin-bottom:11px;}
+.ins-h{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.ins-lbl{font-family:var(--px);font-size:5px;color:var(--pink2);}
+.ins-txt{font-size:12px;color:var(--text2);line-height:1.7;}
+.prog-item{margin-bottom:8px;}
+.prog-row{display:flex;justify-content:space-between;margin-bottom:3px;}
+.prog-nm{font-size:11px;color:var(--text);}
+.prog-pct{font-family:var(--px);font-size:5px;color:var(--text3);}
+.prog-track{height:8px;background:var(--cream2);border:2px solid var(--text);overflow:hidden;}
+.prog-fill{height:100%;transition:width .5s;}
+
+/* ROADMAP */
+.roadmap-form{background:var(--white);border:3px solid var(--text);box-shadow:4px 4px 0 var(--text);padding:18px;margin-bottom:16px;}
+.rm-form-title{font-family:var(--px);font-size:8px;color:var(--text);margin-bottom:4px;line-height:1.8;}
+.rm-form-sub{font-size:13px;color:var(--text2);margin-bottom:15px;line-height:1.7;}
+.rm-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px;}
+.rm-loading{display:none;text-align:center;padding:28px;}
+.roadmap-list{display:flex;flex-direction:column;gap:16px;}
+.rm-card{background:var(--white);border:3px solid var(--text);box-shadow:4px 4px 0 var(--text);}
+.rm-card-hdr{border-bottom:3px solid var(--text);padding:11px 14px;display:flex;align-items:center;gap:11px;}
+.rm-phase-lav{background:var(--lav);}
+.rm-phase-pink{background:var(--pink-pale);}
+.rm-phase-mint{background:var(--mint-pale);}
+.rm-phase-peach{background:var(--peach);}
+.rm-phase-yellow{background:var(--yellow);}
+.rm-phase-num{font-family:var(--px);font-size:7px;color:var(--text);background:var(--white);border:2px solid var(--text);padding:3px 7px;}
+.rm-phase-title{font-family:var(--px);font-size:7px;color:var(--text);flex:1;line-height:1.6;}
+.rm-duration{font-family:var(--px);font-size:5px;color:var(--text2);}
+.rm-xp-badge{font-family:var(--px);font-size:6px;background:var(--yellow);border:2px solid var(--text);padding:3px 8px;color:var(--text);white-space:nowrap;}
+.rm-stage-bar{padding:10px 14px;border-bottom:3px solid var(--border);background:var(--cream2);}
+.rm-stage-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.rm-stage-lbl{font-family:var(--px);font-size:5px;color:var(--text3);flex:1;}
+.rm-stage-pct{font-family:var(--px);font-size:5px;color:var(--lav2);}
+.rm-stage-track{height:7px;background:var(--white);border:2px solid var(--text);overflow:hidden;flex:3;}
+.rm-stage-fill{height:100%;background:var(--lav);transition:width .5s;}
+.rm-stages{display:flex;gap:6px;margin-top:4px;}
+.rm-stage-dot{width:18px;height:18px;border:2px solid var(--text);display:flex;align-items:center;justify-content:center;font-size:9px;cursor:pointer;transition:all .1s;background:var(--white);}
+.rm-stage-dot.done{background:var(--mint);border-color:var(--mint2);}
+.rm-stage-dot.active-s{background:var(--lav);border-color:var(--lav2);animation:blink 1.4s infinite;}
+.rm-stage-dot:hover{transform:scale(1.15);}
+.rm-card-body{padding:13px 14px;}
+.rm-section{margin-bottom:12px;}
+.rm-section:last-child{margin-bottom:0;}
+.rm-sec-title{font-family:var(--px);font-size:5px;color:var(--lav2);margin-bottom:7px;letter-spacing:.08em;}
+.rm-topics{display:flex;flex-wrap:wrap;gap:5px;}
+.rm-topic{background:var(--lav-pale);border:2px solid var(--lav-border);padding:4px 9px;font-size:11px;color:var(--text);}
+.rm-resources{display:flex;flex-direction:column;gap:5px;}
+.rm-resource{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--cream2);border:2px solid var(--border2);text-decoration:none;transition:all .12s;}
+.rm-resource:hover{border-color:var(--lav2);background:var(--lav-pale);transform:translateX(2px);}
+.rm-res-icon{font-size:15px;flex-shrink:0;}
+.rm-res-body{flex:1;min-width:0;}
+.rm-res-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px;}
+.rm-res-desc{font-size:11px;color:var(--text3);}
+.rm-res-tag{font-family:var(--px);font-size:5px;padding:2px 5px;border:1px solid;white-space:nowrap;}
+.tag-free{background:#edfff9;border-color:var(--mint2);color:#0a6640;}
+.tag-video{background:var(--pink-pale);border-color:var(--pink2);color:#a0004a;}
+.tag-interactive{background:var(--lav-pale);border-color:var(--lav2);color:#4a2ab0;}
+.tag-docs{background:#fff8d6;border-color:#f0c000;color:#7a5a00;}
+.rm-projects{display:flex;flex-direction:column;gap:7px;}
+.rm-project{background:var(--cream2);border:2px solid var(--border2);padding:10px 12px;display:flex;align-items:flex-start;gap:10px;transition:all .12s;}
+.rm-project:hover{border-color:var(--pink2);background:var(--pink-pale);}
+.rm-proj-icon{font-size:18px;flex-shrink:0;}
+.rm-proj-body{flex:1;}
+.rm-proj-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.rm-proj-desc{font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:5px;}
+.rm-proj-meta{display:flex;align-items:center;gap:7px;}
+.rm-proj-xp{font-family:var(--px);font-size:5px;background:var(--yellow);border:2px solid var(--text);padding:2px 6px;color:var(--text);}
+.rm-proj-diff{font-family:var(--px);font-size:5px;padding:2px 6px;border:1px solid;}
+.diff-easy{background:var(--mint-pale);border-color:var(--mint2);color:#0a6640;}
+.diff-medium{background:#fff8d6;border-color:#f0c000;color:#7a5a00;}
+.diff-hard{background:var(--pink-pale);border-color:var(--pink2);color:#a0004a;}
+
+/* SHARE MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(61,44,78,.5);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--white);border:3px solid var(--text);box-shadow:6px 6px 0 var(--text);padding:20px;max-width:400px;width:90%;animation:fadeIn .2s ease;}
+.modal-title{font-family:var(--px);font-size:9px;color:var(--text);margin-bottom:6px;line-height:1.8;}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.7;}
+.share-link{background:var(--cream2);border:2px solid var(--border2);padding:9px 12px;font-family:var(--px);font-size:6px;color:var(--text);word-break:break-all;line-height:1.8;margin-bottom:12px;}
+.collab-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto;margin-bottom:12px;}
+.collab-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--cream2);border:2px solid var(--border2);}
+.collab-ava{width:28px;height:28px;border:2px solid var(--text);display:flex;align-items:center;justify-content:center;font-family:var(--px);font-size:6px;}
+.collab-name{font-size:12px;color:var(--text);flex:1;}
+.collab-prog{font-family:var(--px);font-size:5px;color:var(--lav2);}
+
+/* ANALYTICS */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:14px;}
+.analytics-card{background:var(--white);border:3px solid var(--text);box-shadow:3px 3px 0 var(--text);padding:14px;}
+.analytics-title{font-family:var(--px);font-size:6px;color:var(--text);margin-bottom:12px;line-height:1.6;}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px;}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+.bar-fill{width:100%;background:var(--lav);border:2px solid var(--text);transition:height .6s;min-height:4px;}
+.bar-lbl{font-family:var(--px);font-size:4px;color:var(--text3);}
+.bar-val{font-family:var(--px);font-size:4px;color:var(--lav2);}
+.xp-history{display:flex;flex-direction:column;gap:5px;}
+.xp-hist-row{display:flex;align-items:center;gap:8px;}
+.xp-hist-day{font-family:var(--px);font-size:5px;color:var(--text3);min-width:24px;}
+.xp-hist-bar{height:10px;background:var(--lav);border:2px solid var(--text);transition:width .5s;}
+.xp-hist-val{font-family:var(--px);font-size:5px;color:var(--lav2);margin-left:auto;}
+.streak-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.s-cell{aspect-ratio:1;border:2px solid var(--border2);background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:8px;}
+.s-cell.done{background:var(--mint);border-color:var(--mint2);}
+.s-cell.today{background:var(--lav);border-color:var(--lav2);animation:blink 1.4s infinite;}
+.achievement-list{display:flex;flex-direction:column;gap:6px;}
+.achievement{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--cream2);border:2px solid var(--border2);}
+.achievement.unlocked{background:var(--lav-pale);border-color:var(--lav2);}
+.ach-icon{font-size:18px;flex-shrink:0;}
+.ach-body{flex:1;}
+.ach-name{font-family:var(--px);font-size:5px;color:var(--text);margin-bottom:2px;line-height:1.6;}
+.ach-desc{font-size:11px;color:var(--text3);}
+.ach-locked{filter:grayscale(1);opacity:.4;}
+
+/* GARDEN */
+.garden-full{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-bottom:18px;}
+.g-cell{aspect-ratio:1;background:var(--cream2);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:17px;transition:transform .1s;}
+.g-cell.has{background:var(--mint-pale);border-color:var(--mint2);}
+.g-cell.has:hover{transform:scale(1.1);}
+.g-cell.empty{color:var(--text3);font-family:var(--px);font-size:7px;}
+.legend-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+.legend-card{background:var(--white);border:3px solid var(--text);box-shadow:2px 2px 0 var(--text);padding:12px;text-align:center;}
+.legend-icon{font-size:22px;margin-bottom:5px;}
+.legend-name{font-family:var(--px);font-size:5px;color:var(--text);margin-bottom:2px;}
+.legend-req{font-size:11px;color:var(--text3);}
+.streak-row{display:flex;gap:4px;margin-bottom:11px;}
+.streak-dot{width:19px;height:19px;border:2px solid var(--border2);background:var(--cream2);}
+.streak-dot.done{background:var(--mint);border-color:var(--mint2);}
+.streak-dot.today{background:var(--lav);border-color:var(--lav2);animation:blink 1.4s infinite;}
+.empty-state{text-align:center;padding:36px 20px;}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-t{font-family:var(--px);font-size:7px;color:var(--text3);margin-bottom:7px;line-height:1.8;}
+.empty-d{font-size:13px;color:var(--text3);line-height:1.7;}
+</style>
+<!-- Tabler Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+
+<div id="toast"></div>
+<div class="xp-pop" id="xp-pop">+XP</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="share-modal">
+  <div class="modal-box">
+    <div class="modal-title">🤝 Share Roadmap</div>
+    <div class="modal-sub">Share this link with classmates so they can follow the same roadmap and track progress together.</div>
+    <div class="share-link" id="share-link-text">studysprint.app/roadmap/abc123xyz</div>
+    <div style="margin-bottom:12px;">
+      <div style="font-family:var(--px);font-size:6px;color:var(--text3);margin-bottom:8px;letter-spacing:.1em;">CLASSMATES ON THIS ROADMAP</div>
+      <div class="collab-list">
+        <div class="collab-item"><div class="collab-ava" style="background:var(--pink);">KL</div><div class="collab-name">Kira Lim</div><span class="collab-prog">Phase 2 · 60%</span></div>
+        <div class="collab-item"><div class="collab-ava" style="background:var(--mint);">MR</div><div class="collab-name">Marco Reyes</div><span class="collab-prog">Phase 1 · 80%</span></div>
+        <div class="collab-item"><div class="collab-ava" style="background:var(--peach);">AL</div><div class="collab-name">Ana Liza Santos</div><span class="collab-prog">Phase 1 · 40%</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="px-btn mint sm" onclick="copyLink()">📋 copy link</button>
+      <button class="px-btn ghost sm" onclick="closeModal()">close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LANDING -->
+<div id="s-land" class="screen active land">
+  <nav class="land-nav">
+    <div class="brand"><div class="brand-icon">🌱</div><span class="brand-name">StudySprint</span></div>
+    <div style="display:flex;gap:10px;">
+      <button class="px-btn ghost sm" onclick="show('s-login')">log in</button>
+      <button class="px-btn pink sm" onclick="show('s-signup')">get started ✨</button>
+    </div>
+  </nav>
+  <div class="hero">
+    <div style="margin-bottom:13px;">
+      <span class="hero-deco">🌸</span>
+      <span class="hero-deco" style="margin:0 12px;animation-delay:.4s;">⭐</span>
+      <span class="hero-deco" style="animation-delay:.8s;">🌱</span>
+    </div>
+    <div class="hero-tag"><span class="blink-dot"></span> AI-powered for students</div>
+    <h1 class="hero-h">Stop procrastinating.<br><span class="hi">Start finishing.</span></h1>
+    <p class="hero-sub">AI builds your personalized roadmap with real resources, breaks down assignments, and grows your garden as you level up.</p>
+    <div class="hero-btns">
+      <button class="px-btn pink" onclick="show('s-signup')">start for free ✨</button>
+      <button class="px-btn ghost" onclick="demoLogin()">try demo →</button>
+    </div>
+    <div class="preview-wrap">
+      <div class="preview-bar">
+        <div class="p-dot" style="background:#ff7070;"></div>
+        <div class="p-dot" style="background:var(--yellow2);"></div>
+        <div class="p-dot" style="background:var(--mint2);"></div>
+        <div class="preview-url">studysprint.app/roadmap</div>
+      </div>
+      <div class="preview-body">
+        <div class="prev-task"><div class="px-check done">✓</div><span style="flex:1;font-size:12px;text-decoration:line-through;color:var(--text3);">Phase 1: HTML & CSS Basics</span><span class="px-badge b-green">done · +150 XP</span></div>
+        <div class="prev-task"><div class="px-check"></div><span style="flex:1;font-size:12px;color:var(--text);">Phase 2: JavaScript Fundamentals</span><span class="px-badge b-lav">in progress</span></div>
+        <div class="prev-task"><div class="px-check"></div><span style="flex:1;font-size:12px;color:var(--text);">Phase 3: React Basics</span><span class="px-badge b-yellow">+200 XP</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="feat-section">
+    <div class="feat-head">
+      <div class="feat-tag">✨ WHY STUDYSPRINT</div>
+      <div class="feat-h">more than a to-do list</div>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon">🗺️</div><div class="feat-t">AI Roadmap + XP</div><div class="feat-d">Phased learning path with real resources. Complete stages to earn XP and level up.</div></div>
+      <div class="feat-card"><div class="feat-icon">🏗️</div><div class="feat-t">Suggested Projects</div><div class="feat-d">Each roadmap phase includes hands-on projects with XP rewards. Build real things.</div></div>
+      <div class="feat-card"><div class="feat-icon">🤝</div><div class="feat-t">Collaborate</div><div class="feat-d">Share roadmaps with classmates. Track each other's progress. Learn together.</div></div>
+      <div class="feat-card"><div class="feat-icon">📊</div><div class="feat-t">Analytics</div><div class="feat-d">Charts of completion rate, XP history, streaks, and achievements.</div></div>
+      <div class="feat-card"><div class="feat-icon">🌱</div><div class="feat-t">Study Garden</div><div class="feat-d">Every task grows a plant. Progress you can actually see and be proud of.</div></div>
+      <div class="feat-card"><div class="feat-icon">⚠️</div><div class="feat-t">Overload Detection</div><div class="feat-d">Too many deadlines? AI warns you and reorders your priorities automatically.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="s-login" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="auth-deco" style="top:-20px;right:-10px;">🌱</div>
+      <div class="auth-deco" style="bottom:-10px;left:-10px;">🌸</div>
+      <div style="position:relative;z-index:1;">
+        <div class="brand" style="margin-bottom:24px;"><div class="brand-icon">🌱</div><span class="brand-name">StudySprint</span></div>
+        <div class="auth-h">welcome back 👋</div>
+        <div class="auth-sub">Your plants missed you.</div>
+        <div style="margin-top:4px;">
+          <div class="feat-check-row"><div class="feat-chk">✓</div>AI roadmaps with XP per stage</div>
+          <div class="feat-check-row"><div class="feat-chk">✓</div>Suggested projects per phase</div>
+          <div class="feat-check-row"><div class="feat-chk">✓</div>Collaborate with classmates</div>
+        </div>
+        <div class="testimonial">
+          <div class="test-text">"The roadmap + XP system is addicting. I finished my React learning path in 6 weeks just to hit max level."</div>
+          <div class="test-author"><div class="test-ava">KL</div><div><div class="test-name">Kira Lim</div><div class="test-role">3rd year CS</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <button class="px-btn ghost sm" style="margin-bottom:18px;" onclick="show('s-land')">← back</button>
+      <div class="auth-h">log in</div>
+      <div class="auth-sub">Enter your credentials to continue.</div>
+      <div class="form-grp"><label class="form-lbl">email</label><input class="px-input" id="li-email" type="email" placeholder="you@school.edu"/></div>
+      <div class="form-grp"><label class="form-lbl">password</label><input class="px-input" id="li-pw" type="password" placeholder="••••••••"/></div>
+      <div id="li-err" style="font-family:var(--px);font-size:6px;color:var(--danger);margin-bottom:7px;display:none;line-height:1.7;"></div>
+      <button class="px-btn pink" style="width:100%;justify-content:center;" id="li-btn" onclick="doLogin()">log in →</button>
+      <div class="divider"><div class="divider-line"></div><span class="divider-txt">or</span><div class="divider-line"></div></div>
+      <button class="px-btn ghost" style="width:100%;justify-content:center;" onclick="demoLogin()">✨ try demo</button>
+      <div class="auth-switch">no account? <span onclick="show('s-signup')">sign up free</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNUP -->
+<div id="s-signup" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="auth-deco" style="top:-20px;right:-10px;">⭐</div>
+      <div class="auth-deco" style="bottom:-10px;left:-10px;">🌷</div>
+      <div style="position:relative;z-index:1;">
+        <div class="brand" style="margin-bottom:24px;"><div class="brand-icon">🌱</div><span class="brand-name">StudySprint</span></div>
+        <div class="auth-h">join free 🌸</div>
+        <div class="auth-sub">No credit card. Just less procrastinating.</div>
+        <div style="margin-top:4px;">
+          <div class="feat-check-row"><div class="feat-chk">✓</div>AI roadmaps with curated resources</div>
+          <div class="feat-check-row"><div class="feat-chk">✓</div>XP + stages per roadmap phase</div>
+          <div class="feat-check-row"><div class="feat-chk">✓</div>Suggested projects to build</div>
+          <div class="feat-check-row"><div class="feat-chk">✓</div>Collaborate with classmates</div>
+          <div class="feat-check-row"><div class="feat-chk">✓</div>Progress analytics + achievements</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <button class="px-btn ghost sm" style="margin-bottom:16px;" onclick="show('s-land')">← back</button>
+      <div class="auth-h">create account</div>
+      <div class="auth-sub">Takes 30 seconds. For real.</div>
+      <div class="form-row-2">
+        <div class="form-grp"><label class="form-lbl">first name</label><input class="px-input" id="su-fn" placeholder="Juan"/></div>
+        <div class="form-grp"><label class="form-lbl">last name</label><input class="px-input" id="su-ln" placeholder="dela Cruz"/></div>
+      </div>
+      <div class="form-grp"><label class="form-lbl">school email</label><input class="px-input" id="su-email" type="email" placeholder="you@school.edu"/></div>
+      <div class="form-grp"><label class="form-lbl">password</label><input class="px-input" id="su-pw" type="password" placeholder="8+ characters"/></div>
+      <div class="form-grp"><label class="form-lbl">school / university</label><input class="px-input" id="su-school" placeholder="UP Diliman, DLSU, Ateneo..."/></div>
+      <div id="su-err" style="font-family:var(--px);font-size:6px;color:var(--danger);margin-bottom:7px;display:none;line-height:1.7;"></div>
+      <button class="px-btn pink" style="width:100%;justify-content:center;" id="su-btn" onclick="doSignup()">create account — free 🌸</button>
+      <div class="divider"><div class="divider-line"></div><span class="divider-txt">or</span><div class="divider-line"></div></div>
+      <button class="px-btn ghost" style="width:100%;justify-content:center;" onclick="demoLogin()">✨ try demo</button>
+      <div class="auth-switch">already have an account? <span onclick="show('s-login')">log in</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="s-dash" class="screen">
+  <div class="dash">
+    <div class="dash-sidebar">
+      <div class="sidebar-top">
+        <div class="brand" style="margin-bottom:10px;"><div class="brand-icon" style="width:26px;height:26px;font-size:12px;">🌱</div><span class="brand-name" style="font-size:6px;">StudySprint</span></div>
+        <div class="user-card">
+          <div class="user-ava" id="sb-ava">JD</div>
+          <div class="user-name-px" id="sb-name">Demo Student</div>
+          <div class="user-lvl" id="sb-lvl">⭐ Lvl 4 Scholar</div>
+          <div class="xp-wrap">
+            <div class="xp-lbl">XP TO NEXT LEVEL</div>
+            <div class="xp-track"><div class="xp-fill" id="xp-bar" style="width:68%;"></div></div>
+            <div class="xp-nums"><span class="xp-n" id="xp-cur">340</span><span class="xp-n">500</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="nav-item active" onclick="switchTab('tasks')"><i class="ti ti-checkbox"></i> Tasks <span class="nav-badge" id="nb">5</span></div>
+        <div class="nav-item" onclick="switchTab('roadmap')"><i class="ti ti-map"></i> Roadmap</div>
+        <div class="nav-item" onclick="switchTab('analytics')"><i class="ti ti-chart-bar"></i> Analytics</div>
+        <div class="nav-item" onclick="switchTab('garden')"><i class="ti ti-plant"></i> Garden</div>
+        <div class="nav-item" style="margin-top:8px;" onclick="doLogout()"><i class="ti ti-logout"></i> Log out</div>
+      </div>
+      <div class="garden-side">
+        <div class="g-lbl">YOUR GARDEN 🌱</div>
+        <div class="g-mini" id="mini-g"></div>
+      </div>
+    </div>
+
+    <div class="dash-main">
+      <div class="topbar">
+        <div><div class="topbar-g" id="topbar-greet">Good day! ☀️</div><div class="topbar-d" id="topbar-sub">Loading...</div></div>
+        <div class="topbar-r">
+          <button class="icon-btn" onclick="show('s-land')" title="Home"><i class="ti ti-home"></i></button>
+        </div>
+      </div>
+      <div class="dash-tabs">
+        <div class="dash-tab active" id="dtab-tasks" onclick="switchTab('tasks')">📋 Tasks</div>
+        <div class="dash-tab" id="dtab-roadmap" onclick="switchTab('roadmap')">🗺️ Roadmap</div>
+        <div class="dash-tab" id="dtab-analytics" onclick="switchTab('analytics')">📊 Analytics</div>
+        <div class="dash-tab" id="dtab-garden" onclick="switchTab('garden')">🌱 Garden</div>
+      </div>
+
+      <div class="dash-body">
+
+        <!-- TASKS TAB -->
+        <div id="tv-tasks" class="tab-view active">
+          <div class="alert-box" id="overload-box" style="display:none;">
+            <div style="font-size:17px;">⚠️</div>
+            <div style="flex:1;"><div class="alert-title">overload detected!</div><div class="alert-msg" id="overload-msg"></div></div>
+            <button class="px-btn sm yellow" style="flex-shrink:0;">reorder</button>
+          </div>
+          <div class="stats-row">
+            <div class="stat-card"><div class="stat-num" style="color:#cc0000;" id="s-urgent">0</div><div class="stat-lbl">🔴 urgent</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#a07000;" id="s-active">0</div><div class="stat-lbl">🟡 active</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#0a6640;" id="s-done">0</div><div class="stat-lbl">🟢 done</div></div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="sec-h"><span class="sec-t">add assignment 📝</span></div>
+              <div class="add-box">
+                <div class="add-row">
+                  <input class="px-input" id="t-name" placeholder="e.g. History Essay on WW2..." style="flex:2;"/>
+                  <select class="px-select" id="t-prio"><option value="urgent">urgent</option><option value="medium" selected>medium</option><option value="low">low</option></select>
+                </div>
+                <div class="add-row">
+                  <input class="px-input" id="t-subj" placeholder="subject..."/>
+                  <input class="px-input" type="date" id="t-date"/>
+                  <button class="px-btn mint sm" onclick="addTask()">+ add ✨</button>
+                </div>
+              </div>
+              <div class="ai-panel" id="ai-box">
+                <div class="ai-dots" id="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>
+                <div id="ai-result"></div>
+              </div>
+              <div class="sec-h"><span class="sec-t">priority tasks 👇</span></div>
+              <div id="task-list"></div>
+            </div>
+            <div>
+              <div class="focus-card">
+                <div class="focus-lbl">FOCUS SESSION ⏱️</div>
+                <div class="timer-num" id="f-timer">25:00</div>
+                <div class="timer-task" id="f-task">Select a task to focus</div>
+                <div class="timer-btns">
+                  <button class="px-btn sm pink" id="f-btn" onclick="toggleTimer()">start</button>
+                  <button class="px-btn sm ghost" onclick="resetTimer()">reset</button>
+                </div>
+              </div>
+              <div class="insight-card">
+                <div class="ins-h"><span style="font-size:13px;">🤖</span><span class="ins-lbl">AI INSIGHT</span></div>
+                <div class="ins-txt">Complete urgent tasks first. 25 min work → 5 min break. You got this! 🌸</div>
+              </div>
+              <div class="sec-h"><span class="sec-t">by subject 📊</span></div>
+              <div id="prog-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROADMAP TAB -->
+        <div id="tv-roadmap" class="tab-view">
+          <div class="roadmap-form">
+            <div class="rm-form-title">🗺️ AI Roadmap Generator</div>
+            <div class="rm-form-sub">Enter your goal — AI builds a phased roadmap with real resources, suggested projects, and XP rewards per stage.</div>
+            <div class="rm-grid">
+              <div class="form-grp"><label class="form-lbl">what do you want to learn?</label><input class="px-input" id="rm-goal" placeholder="e.g. Learn React, Master Python..."/></div>
+              <div class="form-grp"><label class="form-lbl">current level</label><select class="px-select" id="rm-level" style="width:100%;"><option value="complete beginner">Complete beginner</option><option value="know the basics">Know the basics</option><option value="intermediate">Intermediate</option></select></div>
+              <div class="form-grp"><label class="form-lbl">hours per week</label><input class="px-input" id="rm-hours" placeholder="e.g. 8" type="number" min="1" max="40"/></div>
+              <div class="form-grp"><label class="form-lbl">target deadline</label><input class="px-input" id="rm-deadline" placeholder="e.g. 3 months"/></div>
+            </div>
+            <div style="display:flex;gap:9px;align-items:center;">
+              <button class="px-btn pink" id="rm-btn" onclick="generateRoadmap()">✨ generate roadmap</button>
+              <span style="font-size:12px;color:var(--text3);">topics · resources · projects · XP per stage</span>
+            </div>
+          </div>
+          <div class="rm-loading" id="rm-loading">
+            <div class="ai-dots" style="justify-content:center;"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>
+            <div style="font-family:var(--px);font-size:7px;color:var(--lav2);margin-top:11px;line-height:1.8;">AI is building your roadmap...<br>adding resources + projects...</div>
+          </div>
+          <div id="rm-list" class="roadmap-list"></div>
+          <div id="rm-empty" class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-t">no roadmap yet</div><div class="empty-d">Fill the form above. AI builds a phased roadmap with real resource links, hands-on projects, and XP per stage.</div></div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div id="tv-analytics" class="tab-view">
+          <div class="analytics-grid">
+            <div class="analytics-card"><div class="analytics-title">📅 tasks completed (last 7 days)</div><div class="bar-chart" id="bar-chart"></div></div>
+            <div class="analytics-card"><div class="analytics-title">⭐ XP earned (last 7 days)</div><div class="xp-history" id="xp-history"></div></div>
+            <div class="analytics-card">
+              <div class="analytics-title">🔥 streak calendar</div>
+              <div style="font-family:var(--px);font-size:5px;color:var(--text3);display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px;text-align:center;"><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div></div>
+              <div class="streak-cal" id="streak-cal"></div>
+              <div style="margin-top:10px;font-family:var(--px);font-size:6px;color:var(--lav2);" id="streak-stat">Current streak: 3 days 🔥</div>
+            </div>
+            <div class="analytics-card">
+              <div class="analytics-title">🏆 completion rate</div>
+              <div style="text-align:center;padding:8px 0;">
+                <div style="font-family:var(--px);font-size:28px;color:var(--lav2);" id="completion-pct">37%</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:5px;" id="completion-lbl">3 of 8 tasks completed</div>
+                <div style="margin-top:12px;"><div class="prog-track" style="height:12px;"><div class="prog-fill" id="completion-bar" style="background:var(--lav);width:37%;"></div></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="sec-h"><span class="sec-t">🏆 achievements</span></div>
+          <div class="achievement-list" id="achievement-list"></div>
+        </div>
+
+        <!-- GARDEN TAB -->
+        <div id="tv-garden" class="tab-view">
+          <div class="sec-h"><span class="sec-t">your study garden 🌱</span></div>
+          <div style="margin-bottom:11px;font-size:13px;color:var(--text2);line-height:1.7;">Complete tasks to grow plants. Each finished task adds a new plant. Rare plants unlock with streaks!</div>
+          <div style="margin-bottom:12px;">
+            <div style="font-family:var(--px);font-size:5px;color:var(--text3);margin-bottom:6px;letter-spacing:.1em;">7-DAY STREAK</div>
+            <div class="streak-row" id="streak-row"></div>
+          </div>
+          <div class="garden-full" id="full-g"></div>
+          <div class="sec-h" style="margin-top:14px;"><span class="sec-t">plant legend 🌿</span></div>
+          <div class="legend-grid">
+            <div class="legend-card"><div class="legend-icon">🌱</div><div class="legend-name">SEED</div><div class="legend-req">1 task done</div></div>
+            <div class="legend-card"><div class="legend-icon">🌿</div><div class="legend-name">SPROUT</div><div class="legend-req">4 tasks done</div></div>
+            <div class="legend-card"><div class="legend-icon">🌸</div><div class="legend-name">BLOOM</div><div class="legend-req">8 tasks done</div></div>
+            <div class="legend-card"><div class="legend-icon">🌲</div><div class="legend-name">TREE</div><div class="legend-req">15 tasks done</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG — replace with your own keys ──────────────────
+const SUPABASE_URL = 'https://gplxbxjyvtfcgcstzisx.supabase.co';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwbHhieGp5dnRmY2djc3R6aXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0NjYzNTIsImV4cCI6MjA2NTA0MjM1Mn0.xFnmzH7tNjRpjFQO_4mEWajFxqMKqaDoIfT6Kz9rqyc';
+
+let currentUser=null,userProfile=null,tasks=[],roadmaps=[];
+let timerOn=false,timerSec=1500,timerInt=null;
+const progColors=['#b09af7','#6edbbe','#ff8fb8','#ffd84a','#6eb8ff','#ffb07a'];
+const plantEmojis=['🌱','🌿','🌸','🌲'];
+const phaseColors=['rm-phase-lav','rm-phase-pink','rm-phase-mint','rm-phase-peach','rm-phase-yellow'];
+let rmStages={};
+
+async function sbFetch(path,opts={}){
+  const token=currentUser?.access_token||ANON_KEY;
+  const res=await fetch(SUPABASE_URL+path,{...opts,headers:{'Content-Type':'application/json','apikey':ANON_KEY,'Authorization':'Bearer '+token,...(opts.headers||{})}});
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||'Request failed');}
+  return res.status===204?null:res.json();
+}
+async function authLogin(email,pw){return sbFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email,password:pw})});}
+async function authSignup(email,pw,meta){return sbFetch('/auth/v1/signup',{method:'POST',body:JSON.stringify({email,password:pw,data:meta})});}
+async function getProfile(uid){const d=await sbFetch(`/rest/v1/profiles?id=eq.${uid}&select=*`);return d?.[0]||null;}
+async function upsertProfile(p){return sbFetch('/rest/v1/profiles',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify(p)});}
+async function fetchTasks(uid){return sbFetch(`/rest/v1/tasks?user_id=eq.${uid}&order=created_at.desc`);}
+async function insertTask(t){const d=await sbFetch('/rest/v1/tasks',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(t)});return d?.[0];}
+async function updateTask(id,patch){return sbFetch(`/rest/v1/tasks?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=representation'},body:JSON.stringify(patch)});}
+async function fetchRoadmaps(uid){return sbFetch(`/rest/v1/roadmaps?user_id=eq.${uid}&order=created_at.desc`);}
+async function insertRoadmap(r){const d=await sbFetch('/rest/v1/roadmaps',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(r)});return d?.[0];}
+
+async function doLogin(){
+  const email=document.getElementById('li-email').value.trim();
+  const pw=document.getElementById('li-pw').value;
+  const err=document.getElementById('li-err');
+  const btn=document.getElementById('li-btn');
+  if(!email||!pw){showErr(err,'Please fill in all fields.');return;}
+  btn.disabled=true;btn.textContent='logging in...';
+  try{const d=await authLogin(email,pw);currentUser={access_token:d.access_token,id:d.user.id,email};await loadUserData();show('s-dash');toast('Welcome back! 🌸');}
+  catch(e){showErr(err,e.message||'Login failed.');}
+  finally{btn.disabled=false;btn.textContent='log in →';}
+}
+async function doSignup(){
+  const fn=document.getElementById('su-fn').value.trim();
+  const ln=document.getElementById('su-ln').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pw=document.getElementById('su-pw').value;
+  const school=document.getElementById('su-school').value.trim();
+  const err=document.getElementById('su-err');
+  const btn=document.getElementById('su-btn');
+  if(!fn||!email||!pw){showErr(err,'Please fill required fields.');return;}
+  btn.disabled=true;btn.textContent='creating...';
+  try{
+    const d=await authSignup(email,pw,{full_name:fn+' '+ln,school});
+    if(d.user){currentUser={access_token:d.access_token,id:d.user.id,email};await upsertProfile({id:d.user.id,full_name:fn+' '+ln,school,xp:0,level:1,streak:0});await loadUserData();show('s-dash');toast('Welcome to StudySprint! 🌱');}
+    else{showErr(err,'Check your email to confirm.');}
+  }catch(e){showErr(err,e.message||'Signup failed.');}
+  finally{btn.disabled=false;btn.textContent='create account — free 🌸';}
+}
+function demoLogin(){
+  currentUser={access_token:ANON_KEY,id:'demo',email:'demo@studysprint.app'};
+  userProfile={full_name:'Demo Student',school:'StudySprint U',xp:340,level:4,streak:3};
+  tasks=[
+    {id:'t1',user_id:'demo',name:'History Essay — WW2 causes',priority:'urgent',due_date:'2026-06-22',subject:'History',done:false,steps:[]},
+    {id:'t2',user_id:'demo',name:'Calculus Problem Set 4',priority:'urgent',due_date:'2026-06-23',subject:'Math',done:false,steps:[]},
+    {id:'t3',user_id:'demo',name:'Physics Lab Report',priority:'medium',due_date:'2026-06-25',subject:'Physics',done:false,steps:[]},
+    {id:'t4',user_id:'demo',name:'Spanish Vocabulary Quiz',priority:'medium',due_date:'2026-06-24',subject:'Spanish',done:false,steps:[]},
+    {id:'t5',user_id:'demo',name:'CS: Linked Lists',priority:'low',due_date:'2026-06-27',subject:'CS',done:false,steps:[]},
+    {id:'t6',user_id:'demo',name:'Book Report',priority:'low',due_date:'2026-06-20',subject:'English',done:true,steps:[]},
+    {id:'t7',user_id:'demo',name:'Biology Quiz Prep',priority:'medium',due_date:'2026-06-22',subject:'Biology',done:true,steps:[]},
+    {id:'t8',user_id:'demo',name:'Chemistry Worksheet',priority:'low',due_date:'2026-06-19',subject:'Chemistry',done:true,steps:[]}
+  ];
+  roadmaps=[];rmStages={};renderDash();show('s-dash');toast('Demo mode! ✨');
+}
+function doLogout(){currentUser=null;userProfile=null;tasks=[];roadmaps=[];rmStages={};show('s-land');toast('See you soon! 👋');}
+
+async function loadUserData(){
+  if(!currentUser||currentUser.id==='demo')return;
+  try{userProfile=await getProfile(currentUser.id);tasks=await fetchTasks(currentUser.id)||[];roadmaps=await fetchRoadmaps(currentUser.id)||[];renderDash();}
+  catch(e){toast('Error: '+e.message);}
+}
+
+function renderDash(){
+  const name=userProfile?.full_name||currentUser?.email||'Student';
+  const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const xp=userProfile?.xp||0;const level=userProfile?.level||1;
+  document.getElementById('sb-ava').textContent=initials;
+  document.getElementById('sb-name').textContent=name;
+  document.getElementById('sb-lvl').textContent='⭐ Lvl '+level+' Scholar';
+  document.getElementById('xp-bar').style.width=Math.min(100,(xp%500)/500*100)+'%';
+  document.getElementById('xp-cur').textContent=xp%500;
+  const h=new Date().getHours();
+  const g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+  document.getElementById('topbar-greet').textContent=g+', '+name.split(' ')[0]+'! ☀️';
+  renderTasks();renderMiniGarden();renderFullGarden();renderStreak();renderAnalytics();renderRoadmaps();
+}
+
+function renderTasks(){
+  const active=tasks.filter(t=>!t.done);
+  const done=tasks.filter(t=>t.done);
+  const urgent=active.filter(t=>t.priority==='urgent');
+  document.getElementById('s-urgent').textContent=urgent.length;
+  document.getElementById('s-active').textContent=active.length;
+  document.getElementById('s-done').textContent=done.length;
+  document.getElementById('nb').textContent=active.length;
+  document.getElementById('topbar-sub').textContent=active.length+' active · '+done.length+' completed';
+  const ob=document.getElementById('overload-box');
+  if(urgent.length>=2&&active.length>=4){ob.style.display='flex';document.getElementById('overload-msg').innerHTML='You have <strong>'+active.length+' active</strong> and <strong>'+urgent.length+' urgent</strong>. Start with <strong>'+(urgent[0]?.name||'urgent tasks')+'</strong>. 🌸';}
+  else{ob.style.display='none';}
+  const el=document.getElementById('task-list');el.innerHTML='';
+  [...tasks].sort((a,b)=>{if(a.done!==b.done)return a.done?1:-1;const p={urgent:0,medium:1,low:2};return p[a.priority]-p[b.priority];}).slice(0,7).forEach(t=>{
+    const bc=t.priority==='urgent'?'b-red':t.priority==='medium'?'b-yellow':'b-green';
+    const d=document.createElement('div');d.className='task-item '+(t.done?'low':t.priority);
+    d.innerHTML=`<div class="task-cb${t.done?' done':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</div><div style="flex:1;min-width:0;"><div class="task-nm${t.done?' done':''}">${t.name}</div><div class="task-meta"><span class="task-dt">${t.due_date||''}</span><span style="font-size:11px;color:var(--text2);">${t.subject||''}</span><span class="px-badge ${bc}">${t.priority}</span></div></div>${!t.done?`<button class="px-btn xs" style="background:var(--lav-pale);" onclick="setFocus('${t.id}')">focus</button>`:''}`;
+    el.appendChild(d);
+  });
+  const subjects={};tasks.forEach(t=>{if(!subjects[t.subject])subjects[t.subject]={total:0,done:0};subjects[t.subject].total++;if(t.done)subjects[t.subject].done++;});
+  const pl=document.getElementById('prog-list');pl.innerHTML='';let i=0;
+  for(const s in subjects){const pct=Math.round(subjects[s].done/subjects[s].total*100);const d=document.createElement('div');d.className='prog-item';d.innerHTML=`<div class="prog-row"><span class="prog-nm">${s}</span><span class="prog-pct">${pct}%</span></div><div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${progColors[i%progColors.length]};"></div></div>`;pl.appendChild(d);i++;}
+  renderAnalytics();
+}
+
+function renderMiniGarden(){
+  const g=document.getElementById('mini-g');if(!g)return;g.innerHTML='';
+  const done=tasks.filter(t=>t.done).length;
+  for(let i=0;i<10;i++){const c=document.createElement('div');c.className='gm-c'+(i<done?' has':'');c.innerHTML=i<done?plantEmojis[Math.min(Math.floor(i/3),3)]:'';g.appendChild(c);}
+}
+function renderFullGarden(){
+  const g=document.getElementById('full-g');if(!g)return;g.innerHTML='';
+  const done=tasks.filter(t=>t.done).length;
+  for(let i=0;i<32;i++){const c=document.createElement('div');if(i<done){c.className='g-cell has';c.innerHTML=plantEmojis[Math.min(Math.floor(i/4),3)];}else{c.className='g-cell empty';c.innerHTML='+';}g.appendChild(c);}
+}
+function renderStreak(){
+  const el=document.getElementById('streak-row');if(!el)return;el.innerHTML='';
+  const streak=userProfile?.streak||3;
+  for(let i=0;i<7;i++){const d=document.createElement('div');d.className='streak-dot'+(i<streak?' done':i===streak?' today':'');el.appendChild(d);}
+}
+
+function renderAnalytics(){
+  const days=['Mo','Tu','We','Th','Fr','Sa','Su'];
+  const vals=[2,0,3,1,4,2,1];
+  const bc=document.getElementById('bar-chart');if(!bc)return;bc.innerHTML='';
+  const maxV=Math.max(...vals,1);
+  days.forEach((d,i)=>{const col=document.createElement('div');col.className='bar-col';const h=Math.round((vals[i]/maxV)*70);col.innerHTML=`<span class="bar-val">${vals[i]}</span><div class="bar-fill" style="height:${h}px;background:${i===6?'var(--pink)':'var(--lav)'}"></div><span class="bar-lbl">${d}</span>`;bc.appendChild(col);});
+  const xpVals=[20,0,30,10,40,20,10];
+  const xh=document.getElementById('xp-history');if(!xh)return;xh.innerHTML='';
+  const maxXP=Math.max(...xpVals,1);
+  days.forEach((d,i)=>{const div=document.createElement('div');div.className='xp-hist-row';const w=Math.round((xpVals[i]/maxXP)*100);div.innerHTML=`<span class="xp-hist-day">${d}</span><div class="xp-hist-bar" style="width:${w}%;"></div><span class="xp-hist-val">+${xpVals[i]}</span>`;xh.appendChild(div);});
+  const sc=document.getElementById('streak-cal');if(!sc)return;sc.innerHTML='';
+  const streak=userProfile?.streak||3;
+  for(let i=0;i<28;i++){const c=document.createElement('div');const diff=27-i;c.className='s-cell'+(diff===0?' today':diff<streak?' done':'');c.innerHTML=diff===0?'📍':diff<streak?'✓':'';sc.appendChild(c);}
+  document.getElementById('streak-stat').textContent='Current streak: '+streak+' days 🔥';
+  const done=tasks.filter(t=>t.done).length;const total=tasks.length;const pct=total?Math.round(done/total*100):0;
+  const cpct=document.getElementById('completion-pct');if(cpct)cpct.textContent=pct+'%';
+  const clbl=document.getElementById('completion-lbl');if(clbl)clbl.textContent=done+' of '+total+' tasks completed';
+  const cbar=document.getElementById('completion-bar');if(cbar)cbar.style.width=pct+'%';
+  const al=document.getElementById('achievement-list');if(!al)return;
+  const doneCnt=tasks.filter(t=>t.done).length;
+  const achs=[
+    {icon:'🌱',name:'FIRST STEP',desc:'Complete your first task',unlocked:doneCnt>=1},
+    {icon:'🔥',name:'ON FIRE',desc:'3-day streak',unlocked:(userProfile?.streak||3)>=3},
+    {icon:'🗺️',name:'EXPLORER',desc:'Generate your first roadmap',unlocked:roadmaps.length>=1},
+    {icon:'⭐',name:'SCHOLAR',desc:'Earn 100 XP',unlocked:(userProfile?.xp||340)>=100},
+    {icon:'🌸',name:'IN BLOOM',desc:'Complete 5 tasks',unlocked:doneCnt>=5},
+    {icon:'🏆',name:'CHAMPION',desc:'Complete 10 tasks',unlocked:doneCnt>=10},
+    {icon:'🤝',name:'TEAM PLAYER',desc:'Share a roadmap',unlocked:false},
+    {icon:'🌲',name:'FOREST GUARDIAN',desc:'Grow 15 plants',unlocked:doneCnt>=15},
+  ];
+  al.innerHTML='';
+  achs.forEach(a=>{const d=document.createElement('div');d.className='achievement'+(a.unlocked?' unlocked':'');d.innerHTML=`<span class="ach-icon${a.unlocked?'':' ach-locked'}">${a.icon}</span><div class="ach-body"><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>${a.unlocked?'<span class="px-badge b-green">unlocked</span>':'<span class="px-badge" style="background:var(--cream2);border-color:var(--border2);color:var(--text3);">locked</span>'}`;al.appendChild(d);});
+}
+
+async function addTask(){
+  const name=document.getElementById('t-name').value.trim();
+  const prio=document.getElementById('t-prio').value;
+  const subj=document.getElementById('t-subj').value.trim()||'General';
+  const date=document.getElementById('t-date').value;
+  if(!name){toast('Enter a task name! 🌸');return;}
+  const task={user_id:currentUser.id,name,priority:prio,subject:subj,due_date:date||null,done:false,steps:[]};
+  if(currentUser.id!=='demo'){try{const s=await insertTask(task);if(s)tasks.unshift(s);}catch(e){toast('Save error: '+e.message);return;}}
+  else{task.id='t'+Date.now();tasks.unshift(task);}
+  document.getElementById('t-name').value='';document.getElementById('t-subj').value='';
+  renderTasks();renderMiniGarden();renderFullGarden();
+  const box=document.getElementById('ai-box');const res=document.getElementById('ai-result');const dots=document.getElementById('ai-dots');
+  box.classList.add('show');res.innerHTML='';dots.style.display='flex';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:`Break this student assignment into 4-5 concrete steps: "${name}" (subject: ${subj}, priority: ${prio}). JSON array only: [{"step":"..."}]`}]})});
+    const d=await r.json();const raw=d.content.map(x=>x.text||'').join('');
+    const steps=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    dots.style.display='none';
+    res.innerHTML=`<div class="ai-header-px">🤖 breakdown — ${name}</div>`+steps.map((s,i)=>`<div class="ai-step"><span class="step-badge">0${i+1}</span><span>${s.step}</span></div>`).join('');
+  }catch(e){
+    dots.style.display='none';
+    res.innerHTML=`<div class="ai-header-px">🤖 breakdown — ${name}</div>`+getFallback(name).map((s,i)=>`<div class="ai-step"><span class="step-badge">0${i+1}</span><span>${s}</span></div>`).join('');
+  }
+}
+
+async function toggleTask(id){
+  const t=tasks.find(x=>x.id===id);if(!t||t.done)return;
+  t.done=true;
+  if(currentUser.id!=='demo')updateTask(id,{done:true}).catch(()=>{});
+  if(userProfile){userProfile.xp=(userProfile.xp||0)+10;if(currentUser.id!=='demo')upsertProfile({id:currentUser.id,xp:userProfile.xp}).catch(()=>{});}
+  showXpPop('+10 XP! 🌸');renderTasks();renderMiniGarden();renderFullGarden();renderAnalytics();
+}
+
+function setFocus(id){const t=tasks.find(x=>x.id===id);if(!t)return;document.getElementById('f-task').textContent=t.name;resetTimer();toast('Focus set ⏱️');}
+function getFallback(name){const n=name.toLowerCase();if(n.includes('essay')||n.includes('report'))return['Brainstorm and outline','Write intro first','Draft body sections','Add citations','Proofread and submit'];if(n.includes('quiz')||n.includes('exam'))return['Review your notes','Create summary sheet','Practice problems','Self-test','Rest before exam'];return['Break into smaller parts','Start easiest section','Work in 25-min sessions','Review before finishing','Submit ahead of deadline'];}
+function toggleTimer(){const btn=document.getElementById('f-btn');if(timerOn){clearInterval(timerInt);timerOn=false;btn.textContent='resume';}else{timerOn=true;btn.textContent='pause';timerInt=setInterval(()=>{timerSec--;if(timerSec<=0){timerSec=0;clearInterval(timerInt);timerOn=false;btn.textContent='done! ✓';toast('Session done! Rest now 🌸');}const m=Math.floor(timerSec/60),s=timerSec%60;document.getElementById('f-timer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;},1000);}}
+function resetTimer(){clearInterval(timerInt);timerOn=false;timerSec=1500;const d=document.getElementById('f-timer');if(d)d.textContent='25:00';const b=document.getElementById('f-btn');if(b)b.textContent='start';}
+
+async function generateRoadmap(){
+  const goal=document.getElementById('rm-goal').value.trim();
+  const level=document.getElementById('rm-level').value;
+  const hours=document.getElementById('rm-hours').value||'8';
+  const deadline=document.getElementById('rm-deadline').value.trim()||'3 months';
+  if(!goal){toast('Enter a learning goal! 🗺️');return;}
+  const btn=document.getElementById('rm-btn');btn.disabled=true;
+  document.getElementById('rm-loading').style.display='block';
+  document.getElementById('rm-empty').style.display='none';
+  document.getElementById('rm-list').innerHTML='';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:`Create a student learning roadmap.
+Goal: "${goal}" | Level: ${level} | Hours/week: ${hours} | Deadline: ${deadline}
+
+Return ONLY a JSON array of 3-5 phases. Each phase:
+{
+  "phase": 1,
+  "title": "Phase title",
+  "duration": "e.g. 2 weeks",
+  "xp": 150,
+  "topics": ["topic1","topic2","topic3"],
+  "resources": [
+    {"name":"Resource name","url":"https://real-url.com","type":"free|video|interactive|docs","description":"Why this is great","icon":"📖"}
+  ],
+  "projects": [
+    {"name":"Project name","description":"What to build and why","difficulty":"easy|medium|hard","xp":50,"icon":"🏗️"}
+  ]
+}
+
+Use REAL URLs (MDN, freeCodeCamp, The Odin Project, JavaScript.info, roadmap.sh, Scrimba, CS50, Khan Academy, official docs, YouTube). 3-4 resources per phase. 2-3 projects per phase. JSON only, no markdown.`}]})});
+    const data=await r.json();
+    const raw=data.content.map(x=>x.text||'').join('');
+    const phases=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const rmRecord={user_id:currentUser.id,goal,level,hours_per_week:parseInt(hours),deadline,phases,created_at:new Date().toISOString()};
+    if(currentUser.id!=='demo'){try{const s=await insertRoadmap(rmRecord);if(s)roadmaps.unshift(s);}catch(e){}}
+    else{rmRecord.id='rm'+Date.now();roadmaps.unshift(rmRecord);}
+    rmStages={};renderRoadmapPhases(goal,phases);toast('Roadmap generated! 🗺️✨');
+  }catch(e){document.getElementById('rm-empty').style.display='block';document.getElementById('rm-empty').querySelector('.empty-d').textContent='Error: '+(e.message||'Try again.');}
+  finally{btn.disabled=false;document.getElementById('rm-loading').style.display='none';}
+}
+
+function renderRoadmaps(){
+  if(roadmaps.length===0){document.getElementById('rm-empty').style.display='block';document.getElementById('rm-list').innerHTML='';return;}
+  document.getElementById('rm-empty').style.display='none';
+  renderRoadmapPhases(roadmaps[0].goal,roadmaps[0].phases);
+}
+
+function renderRoadmapPhases(goal,phases){
+  const el=document.getElementById('rm-list');
+  el.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-family:var(--px);font-size:7px;color:var(--lav2);line-height:1.8;">🗺️ ${goal}</div><button class="px-btn sm peach" onclick="openShareModal()">🤝 share roadmap</button></div>`;
+  const typeTag={free:'tag-free',video:'tag-video',interactive:'tag-interactive',docs:'tag-docs'};
+  (phases||[]).forEach((p,pi)=>{
+    const rmId='rm-'+pi;
+    if(!rmStages[rmId])rmStages[rmId]={stages:4,done:0};
+    const st=rmStages[rmId];
+    const stagePct=Math.round(st.done/st.stages*100);
+    const phaseTotalXp=p.xp||150;
+    const projXP=(p.projects||[]).reduce((a,pr)=>a+(pr.xp||30),0);
+    const totalXP=phaseTotalXp+projXP;
+    const stageDotsHtml=Array.from({length:st.stages},(_,si)=>`<div class="rm-stage-dot${si<st.done?' done':si===st.done?' active-s':''}" onclick="completeStage('${rmId}',${si})" title="Stage ${si+1}">${si<st.done?'✓':si+1}</div>`).join('');
+    const resources=(p.resources||[]).map(r=>`<a class="rm-resource" href="${r.url}" target="_blank" rel="noopener"><span class="rm-res-icon">${r.icon||'📖'}</span><div class="rm-res-body"><div class="rm-res-name">${r.name}</div><div class="rm-res-desc">${r.description}</div></div><span class="rm-res-tag ${typeTag[r.type]||'tag-free'}">${r.type||'free'}</span></a>`).join('');
+    const projects=(p.projects||[]).map(pr=>`<div class="rm-project"><span class="rm-proj-icon">${pr.icon||'🏗️'}</span><div class="rm-proj-body"><div class="rm-proj-name">${pr.name}</div><div class="rm-proj-desc">${pr.description}</div><div class="rm-proj-meta"><span class="rm-proj-xp">+${pr.xp||30} XP</span><span class="rm-proj-diff diff-${pr.difficulty||'medium'}">${pr.difficulty||'medium'}</span><button class="px-btn xs mint" onclick="claimProjectXP(${pr.xp||30},'${pr.name.replace(/'/g,"\\'")}')">claim XP →</button></div></div></div>`).join('');
+    const topics=(p.topics||[]).map(t=>`<div class="rm-topic">${t}</div>`).join('');
+    const hdrClass=phaseColors[pi%phaseColors.length];
+    el.innerHTML+=`<div class="rm-card"><div class="rm-card-hdr ${hdrClass}"><span class="rm-phase-num">Phase ${p.phase||pi+1}</span><span class="rm-phase-title">${p.title}</span><span class="rm-duration">⏱ ${p.duration}</span><span class="rm-xp-badge">⭐ +${totalXP} XP</span></div><div class="rm-stage-bar"><div class="rm-stage-row"><span class="rm-stage-lbl">STAGE PROGRESS</span><div class="rm-stage-track"><div class="rm-stage-fill" style="width:${stagePct}%;"></div></div><span class="rm-stage-pct">${stagePct}%</span></div><div class="rm-stages">${stageDotsHtml}${st.done===st.stages?'<span class="px-badge b-green" style="margin-left:6px;">✓ PHASE COMPLETE</span>':'<span style="font-size:11px;color:var(--text3);margin-left:6px;">tap stages to complete</span>'}</div></div><div class="rm-card-body"><div class="rm-section"><div class="rm-sec-title">TOPICS TO COVER</div><div class="rm-topics">${topics}</div></div><div class="rm-section"><div class="rm-sec-title">CURATED RESOURCES</div><div class="rm-resources">${resources}</div></div><div class="rm-section"><div class="rm-sec-title">🏗️ SUGGESTED PROJECTS</div><div class="rm-projects">${projects}</div></div></div></div>`;
+  });
+}
+
+function completeStage(rmId,stageIdx){
+  if(!rmStages[rmId])return;
+  const st=rmStages[rmId];
+  if(stageIdx===st.done){
+    st.done++;const xpGain=25;
+    if(userProfile){userProfile.xp=(userProfile.xp||0)+xpGain;if(currentUser.id!=='demo')upsertProfile({id:currentUser.id,xp:userProfile.xp}).catch(()=>{});}
+    document.getElementById('xp-bar').style.width=Math.min(100,((userProfile?.xp||0)%500)/500*100)+'%';
+    document.getElementById('xp-cur').textContent=(userProfile?.xp||0)%500;
+    showXpPop('+'+xpGain+' XP! Stage '+(stageIdx+1)+' done 🌸');
+    if(st.done===st.stages){toast('Phase complete! +50 bonus XP 🎉');if(userProfile)userProfile.xp+=50;}
+    if(roadmaps.length>0)renderRoadmapPhases(roadmaps[0].goal,roadmaps[0].phases);
+  }else if(stageIdx<st.done){toast('Already completed! ✓');}
+  else{toast('Complete previous stages first! 👇');}
+}
+
+function claimProjectXP(xp,name){
+  if(userProfile){userProfile.xp=(userProfile.xp||0)+xp;if(currentUser.id!=='demo')upsertProfile({id:currentUser.id,xp:userProfile.xp}).catch(()=>{});}
+  document.getElementById('xp-bar').style.width=Math.min(100,((userProfile?.xp||0)%500)/500*100)+'%';
+  document.getElementById('xp-cur').textContent=(userProfile?.xp||0)%500;
+  showXpPop('+'+xp+' XP!\n'+name+' 🏗️');toast('Project XP claimed! +'+xp+' 🎉');
+}
+
+function openShareModal(){
+  const code=Math.random().toString(36).slice(2,10);
+  document.getElementById('share-link-text').textContent='studysprint.app/roadmap/'+code;
+  document.getElementById('share-modal').classList.add('show');
+}
+function closeModal(){document.getElementById('share-modal').classList.remove('show');}
+function copyLink(){const t=document.getElementById('share-link-text').textContent;navigator.clipboard.writeText(t).catch(()=>{});toast('Link copied! 📋');}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function switchTab(tab){
+  ['tasks','roadmap','analytics','garden'].forEach(t=>{document.getElementById('tv-'+t)?.classList.toggle('active',t===tab);document.getElementById('dtab-'+t)?.classList.toggle('active',t===tab);});
+  document.querySelectorAll('.nav-item').forEach(n=>{const txt=n.textContent.toLowerCase();n.classList.toggle('active',txt.includes(tab));});
+  if(tab==='analytics')renderAnalytics();
+  if(tab==='garden'){renderFullGarden();renderStreak();}
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2800);}
+function showXpPop(msg){const p=document.getElementById('xp-pop');p.textContent=msg;p.classList.add('show');clearTimeout(window._xpt);window._xpt=setTimeout(()=>p.classList.remove('show'),1800);}
+function showErr(el,msg){el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
+</script>
+</body>
+</html>

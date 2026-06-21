@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudySprint — Dashboard</title>
+<meta name="description" content="Your StudySprint dashboard — manage tasks, build roadmaps, track streaks, and grow your study garden.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+<!-- Load all JS modules -->
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/garden.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/roadmap.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</head>
+<body>
+
+<!-- ── Global Overlays ──────────────────────────────────────── -->
+<div id="toast"></div>
+<div class="xp-pop" id="xp-pop">+XP</div>
+
+<!-- ── Share Modal ──────────────────────────────────────────── -->
+<div class="modal-overlay" id="share-modal">
+  <div class="modal-box">
+    <div class="modal-title">🤝 Share Roadmap</div>
+    <div class="modal-sub">Share this link with classmates so they can follow the same roadmap and track progress together.</div>
+    <div class="share-link" id="share-link-text">studysprint.app/roadmap/abc123xyz</div>
+    <div style="margin-bottom:14px;">
+      <div style="font-family:var(--px);font-size:6px;color:var(--text3);margin-bottom:8px;letter-spacing:.1em;">CLASSMATES ON THIS ROADMAP</div>
+      <div class="collab-list">
+        <div class="collab-item"><div class="collab-ava" style="background:var(--pink);">KL</div><div class="collab-name">Kira Lim</div><span class="collab-prog">Phase 2 · 60%</span></div>
+        <div class="collab-item"><div class="collab-ava" style="background:var(--mint);">MR</div><div class="collab-name">Marco Reyes</div><span class="collab-prog">Phase 1 · 80%</span></div>
+        <div class="collab-item"><div class="collab-ava" style="background:var(--peach);">AL</div><div class="collab-name">Ana Liza Santos</div><span class="collab-prog">Phase 1 · 40%</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="px-btn mint sm" onclick="copyLink()">📋 copy link</button>
+      <button class="px-btn ghost sm" onclick="closeModal()">close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Profile Settings Modal ───────────────────────────────── -->
+<div class="modal-overlay profile-modal" id="profile-modal">
+  <div class="modal-box">
+    <div class="modal-title">⚙️ Profile Settings</div>
+    <div class="profile-ava-lg" id="pm-ava">ST</div>
+    <div class="form-grp">
+      <label class="form-lbl" for="pm-name">display name</label>
+      <input class="px-input" id="pm-name" placeholder="Your name">
+    </div>
+    <div class="form-grp">
+      <label class="form-lbl" for="pm-school">school / university</label>
+      <input class="px-input" id="pm-school" placeholder="UP Diliman, DLSU...">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="px-btn mint" id="pm-save" onclick="saveProfile()">save changes</button>
+      <button class="px-btn ghost" onclick="closeProfileModal()">cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Dashboard Shell ───────────────────────────────────────── -->
+<div class="dash">
+
+  <!-- SIDEBAR -->
+  <nav class="dash-sidebar">
+    <div class="sidebar-top">
+      <a class="brand" href="index.html" style="text-decoration:none;margin-bottom:11px;display:flex;">
+        <div class="brand-icon" style="width:26px;height:26px;font-size:12px;">🌱</div>
+        <span class="brand-name" style="font-size:6px;">StudySprint</span>
+      </a>
+      <div class="user-card">
+        <div class="user-ava" id="sb-ava">ST</div>
+        <div class="user-name-px" id="sb-name">Student</div>
+        <div class="user-lvl" id="sb-lvl">⭐ Lvl 1 Scholar</div>
+        <div class="xp-wrap">
+          <div class="xp-lbl">XP TO NEXT LEVEL</div>
+          <div class="xp-track"><div class="xp-fill" id="xp-bar" style="width:0%;"></div></div>
+          <div class="xp-nums"><span class="xp-n" id="xp-cur">0</span><span class="xp-n">500</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-item active" data-tab="tasks" onclick="switchTab('tasks')">
+        <i class="ti ti-checkbox"></i> <span>Tasks</span>
+        <span class="nav-badge" id="nb">0</span>
+      </div>
+      <div class="nav-item" data-tab="roadmap" onclick="switchTab('roadmap')">
+        <i class="ti ti-map"></i> <span>Roadmap</span>
+      </div>
+      <div class="nav-item" data-tab="analytics" onclick="switchTab('analytics')">
+        <i class="ti ti-chart-bar"></i> <span>Analytics</span>
+      </div>
+      <div class="nav-item" data-tab="garden" onclick="switchTab('garden')">
+        <i class="ti ti-plant"></i> <span>Garden</span>
+      </div>
+    </div>
+
+    <div style="padding:7px 0;border-top:3px solid var(--border);">
+      <div class="nav-item" onclick="openProfileModal()">
+        <i class="ti ti-settings"></i> <span>Settings</span>
+      </div>
+      <div class="nav-item" onclick="doLogout()">
+        <i class="ti ti-logout"></i> <span>Log out</span>
+      </div>
+    </div>
+
+    <div class="garden-side">
+      <div class="g-lbl">YOUR GARDEN 🌱</div>
+      <div class="g-mini" id="mini-g"></div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="dash-main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <div class="topbar-g" id="topbar-greet">Good day! ☀️</div>
+        <div class="topbar-d" id="topbar-sub">Loading your data...</div>
+      </div>
+      <div class="topbar-r">
+        <button class="icon-btn" onclick="openProfileModal()" title="Profile settings"><i class="ti ti-user-circle"></i></button>
+        <button class="icon-btn" onclick="doLogout()" title="Log out"><i class="ti ti-logout"></i></button>
+      </div>
+    </header>
+
+    <!-- TABS -->
+    <div class="dash-tabs">
+      <div class="dash-tab active" id="dtab-tasks"     onclick="switchTab('tasks')">📋 Tasks</div>
+      <div class="dash-tab"        id="dtab-roadmap"   onclick="switchTab('roadmap')">🗺️ Roadmap</div>
+      <div class="dash-tab"        id="dtab-analytics" onclick="switchTab('analytics')">📊 Analytics</div>
+      <div class="dash-tab"        id="dtab-garden"    onclick="switchTab('garden')">🌱 Garden</div>
+    </div>
+
+    <div class="dash-body">
+
+      <!-- ═══════════════════════════════════════════════════════
+           TASKS TAB
+           ═══════════════════════════════════════════════════════ -->
+      <div id="tv-tasks" class="tab-view active">
+
+        <!-- Overload Warning -->
+        <div class="alert-box" id="overload-box" style="display:none;">
+          <div style="font-size:18px;">⚠️</div>
+          <div style="flex:1;">
+            <div class="alert-title">overload detected!</div>
+            <div class="alert-msg" id="overload-msg"></div>
+          </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-num" style="color:#cc0000;" id="s-urgent">0</div><div class="stat-lbl">🔴 urgent</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#a07000;" id="s-active">0</div><div class="stat-lbl">🟡 active</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#0a6640;" id="s-done">0</div><div class="stat-lbl">🟢 done</div></div>
+        </div>
+
+        <div class="two-col">
+          <!-- LEFT: Add task + task list -->
+          <div>
+            <div class="sec-h"><span class="sec-t">add assignment 📝</span></div>
+            <div class="add-box">
+              <div class="add-row">
+                <input class="px-input" id="t-name" placeholder="e.g. History Essay on WW2..." style="flex:2;">
+                <select class="px-select" id="t-prio">
+                  <option value="urgent">🔴 urgent</option>
+                  <option value="medium" selected>🟡 medium</option>
+                  <option value="low">🟢 low</option>
+                </select>
+              </div>
+              <div class="add-row">
+                <input class="px-input" id="t-subj" placeholder="subject (e.g. Math, History...)">
+                <input class="px-input" type="date" id="t-date">
+                <button class="px-btn mint sm" onclick="addTask()">+ add ✨</button>
+              </div>
+            </div>
+
+            <!-- AI Breakdown Panel -->
+            <div class="ai-panel" id="ai-box">
+              <div class="ai-dots" id="ai-dots">
+                <div class="ai-dot"></div>
+                <div class="ai-dot"></div>
+                <div class="ai-dot"></div>
+              </div>
+              <div id="ai-result"></div>
+            </div>
+
+            <div class="sec-h"><span class="sec-t">priority tasks 👇</span></div>
+            <div id="task-list"></div>
+          </div>
+
+          <!-- RIGHT: Focus timer + insight + subject progress -->
+          <div>
+            <div class="focus-card">
+              <div class="focus-lbl">FOCUS SESSION ⏱️</div>
+              <div class="timer-num" id="f-timer">25:00</div>
+              <div class="timer-task" id="f-task">Select a task to focus on</div>
+              <div class="timer-btns">
+                <button class="px-btn sm pink" id="f-btn" onclick="toggleTimer()">start</button>
+                <button class="px-btn sm ghost" onclick="resetTimer()">reset</button>
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="ins-h">
+                <span style="font-size:14px;">🤖</span>
+                <span class="ins-lbl">AI INSIGHT</span>
+              </div>
+              <div class="ins-txt" id="insight-txt">Complete urgent tasks first. Try 25 min work → 5 min break. You got this! 🌸</div>
+            </div>
+
+            <div class="sec-h"><span class="sec-t">by subject 📊</span></div>
+            <div id="prog-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════
+           ROADMAP TAB
+           ═══════════════════════════════════════════════════════ -->
+      <div id="tv-roadmap" class="tab-view">
+        <div class="roadmap-form">
+          <div class="rm-form-title">🗺️ AI Roadmap Generator</div>
+          <div class="rm-form-sub">Enter your learning goal — the AI builds a phased roadmap with real resources, hands-on projects, and XP rewards per stage.</div>
+          <div class="rm-grid">
+            <div class="form-grp">
+              <label class="form-lbl" for="rm-goal">what do you want to learn?</label>
+              <input class="px-input" id="rm-goal" placeholder="e.g. Learn React, Master Python, SQL...">
+            </div>
+            <div class="form-grp">
+              <label class="form-lbl" for="rm-level">current level</label>
+              <select class="px-select" id="rm-level" style="width:100%;">
+                <option value="complete beginner">Complete beginner</option>
+                <option value="know the basics">Know the basics</option>
+                <option value="intermediate">Intermediate</option>
+              </select>
+            </div>
+            <div class="form-grp">
+              <label class="form-lbl" for="rm-hours">hours per week</label>
+              <input class="px-input" id="rm-hours" placeholder="e.g. 8" type="number" min="1" max="40">
+            </div>
+            <div class="form-grp">
+              <label class="form-lbl" for="rm-deadline">target deadline</label>
+              <input class="px-input" id="rm-deadline" placeholder="e.g. 3 months">
+            </div>
+          </div>
+          <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;">
+            <button class="px-btn pink" id="rm-btn" onclick="generateRoadmap()">✨ generate roadmap</button>
+            <span style="font-size:12px;color:var(--text3);">topics · resources · projects · XP per stage</span>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="rm-loading" id="rm-loading">
+          <div class="ai-dots" style="justify-content:center;">
+            <div class="ai-dot"></div>
+            <div class="ai-dot"></div>
+            <div class="ai-dot"></div>
+          </div>
+          <div style="font-family:var(--px);font-size:7px;color:var(--lav2);margin-top:13px;line-height:1.9;">
+            Building your roadmap...<br>adding resources + projects...
+          </div>
+        </div>
+
+        <!-- Roadmap List -->
+        <div id="rm-list" class="roadmap-list"></div>
+
+        <!-- Empty State -->
+        <div id="rm-empty" class="empty-state">
+          <div class="empty-icon">🗺️</div>
+          <div class="empty-t">no roadmap yet</div>
+          <div class="empty-d">Fill the form above. The AI builds a phased roadmap with real resource links, hands-on projects, and XP per stage. Works for any topic!</div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════
+           ANALYTICS TAB
+           ═══════════════════════════════════════════════════════ -->
+      <div id="tv-analytics" class="tab-view">
+        <div class="analytics-grid">
+          <!-- Tasks Chart -->
+          <div class="analytics-card">
+            <div class="analytics-title">📅 tasks completed (last 7 days)</div>
+            <div class="bar-chart" id="bar-chart"></div>
+          </div>
+
+          <!-- XP History -->
+          <div class="analytics-card">
+            <div class="analytics-title">⭐ XP earned (last 7 days)</div>
+            <div class="xp-history" id="xp-history"></div>
+          </div>
+
+          <!-- Streak Calendar -->
+          <div class="analytics-card">
+            <div class="analytics-title">🔥 streak calendar</div>
+            <div style="font-family:var(--px);font-size:5px;color:var(--text3);display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px;text-align:center;">
+              <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
+            </div>
+            <div class="streak-cal" id="streak-cal"></div>
+            <div style="margin-top:10px;font-family:var(--px);font-size:6px;color:var(--lav2);" id="streak-stat">Current streak: 0 days</div>
+          </div>
+
+          <!-- Completion Rate -->
+          <div class="analytics-card">
+            <div class="analytics-title">🏆 completion rate</div>
+            <div style="text-align:center;padding:8px 0;">
+              <div style="font-family:var(--px);font-size:28px;color:var(--lav2);" id="completion-pct">0%</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:5px;" id="completion-lbl">0 of 0 tasks completed</div>
+              <div style="margin-top:12px;">
+                <div class="prog-track" style="height:12px;">
+                  <div class="prog-fill" id="completion-bar" style="background:var(--lav);width:0%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="sec-h"><span class="sec-t">🏆 achievements</span></div>
+        <div class="achievement-list" id="achievement-list"></div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════
+           GARDEN TAB
+           ═══════════════════════════════════════════════════════ -->
+      <div id="tv-garden" class="tab-view">
+        <div class="sec-h">
+          <span class="sec-t">your study garden 🌱</span>
+          <span id="garden-stat" style="font-size:11px;color:var(--text3);">0 plants growing</span>
+        </div>
+        <div style="margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.8;">
+          Complete tasks to grow plants. Seeds → Sprouts → Cherry Blossoms → Ancient Trees. Rare plants unlock with long streaks!
+        </div>
+
+        <!-- 7-Day Streak -->
+        <div style="margin-bottom:14px;">
+          <div style="font-family:var(--px);font-size:5px;color:var(--text3);margin-bottom:7px;letter-spacing:.1em;">7-DAY STREAK</div>
+          <div class="streak-row" id="streak-row"></div>
+          <div style="font-size:12px;color:var(--text2);margin-top:5px;" id="streak-lbl">Complete tasks daily to grow your streak!</div>
+        </div>
+
+        <!-- Garden Grid -->
+        <div class="garden-full" id="full-g"></div>
+
+        <!-- Plant Legend -->
+        <div class="sec-h" style="margin-top:16px;"><span class="sec-t">plant legend 🌿</span></div>
+        <div class="legend-grid">
+          <div class="legend-card"><div class="legend-icon">🌱</div><div class="legend-name">SEED</div><div class="legend-req">1 task done</div></div>
+          <div class="legend-card"><div class="legend-icon">🌿</div><div class="legend-name">SPROUT</div><div class="legend-req">4 tasks done</div></div>
+          <div class="legend-card"><div class="legend-icon">🌸</div><div class="legend-name">BLOSSOM</div><div class="legend-req">8 tasks done</div></div>
+          <div class="legend-card"><div class="legend-icon">🌲</div><div class="legend-name">ANCIENT TREE</div><div class="legend-req">15 tasks done</div></div>
+        </div>
+      </div>
+
+    </div><!-- .dash-body -->
+  </div><!-- .dash-main -->
+</div><!-- .dash -->
+
+</body>
+</html>

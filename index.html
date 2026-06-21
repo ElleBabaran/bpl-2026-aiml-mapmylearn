@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudySprint — Stop Procrastinating. Start Finishing.</title>
+<meta name="description" content="StudySprint is an AI-powered student planner that builds personalised learning roadmaps, breaks down assignments, and grows your study garden as you level up.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="js/config.js" defer></script>
+<script src="js/app.js" defer></script>
+<script src="js/auth.js" defer></script>
+<script defer>
+  document.addEventListener('DOMContentLoaded', initPublicPage);
+</script>
+</head>
+<body>
+
+<div id="toast"></div>
+<div class="xp-pop" id="xp-pop">+XP</div>
+
+<div class="land">
+
+  <!-- NAV -->
+  <nav class="land-nav">
+    <div class="brand">
+      <div class="brand-icon">🌱</div>
+      <span class="brand-name">StudySprint</span>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <a class="px-btn ghost sm" href="login.html">log in</a>
+      <a class="px-btn pink sm" href="login.html?tab=signup">get started ✨</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div style="margin-bottom:14px;">
+      <span class="hero-deco">🌸</span>
+      <span class="hero-deco" style="margin:0 14px;animation-delay:.4s;">⭐</span>
+      <span class="hero-deco" style="animation-delay:.8s;">🌱</span>
+    </div>
+    <div class="hero-tag"><span class="blink-dot"></span> AI-powered student planner</div>
+    <h1 class="hero-h">Stop procrastinating.<br><span class="hi">Start finishing.</span></h1>
+    <p class="hero-sub">AI builds your personalised roadmap with real resources, breaks down assignments into steps, and grows your garden every time you level up.</p>
+    <div class="hero-btns">
+      <a class="px-btn pink" href="login.html?tab=signup">start for free ✨</a>
+      <button class="px-btn ghost" onclick="demoLogin()">try demo →</button>
+    </div>
+
+    <!-- Browser preview mockup -->
+    <div class="preview-wrap">
+      <div class="preview-bar">
+        <div class="p-dot" style="background:#ff7070;"></div>
+        <div class="p-dot" style="background:var(--yellow2);"></div>
+        <div class="p-dot" style="background:var(--mint2);"></div>
+        <div class="preview-url">studysprint.app/dashboard</div>
+      </div>
+      <div class="preview-body">
+        <div class="prev-task">
+          <div class="px-check done">✓</div>
+          <span style="flex:1;font-size:12px;text-decoration:line-through;color:var(--text3);">Phase 1: HTML &amp; CSS Basics</span>
+          <span class="px-badge b-green">done · +150 XP</span>
+        </div>
+        <div class="prev-task">
+          <div class="px-check"></div>
+          <span style="flex:1;font-size:12px;color:var(--text);">Phase 2: JavaScript Fundamentals</span>
+          <span class="px-badge b-lav">in progress</span>
+        </div>
+        <div class="prev-task">
+          <div class="px-check"></div>
+          <span style="flex:1;font-size:12px;color:var(--text);">Phase 3: React Basics</span>
+          <span class="px-badge b-yellow">+200 XP</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="feat-section">
+    <div class="feat-head">
+      <div class="feat-tag">✨ WHY STUDYSPRINT</div>
+      <div class="feat-h">more than a to-do list</div>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">🗺️</div>
+        <div class="feat-t">AI Roadmap + XP</div>
+        <div class="feat-d">Enter your learning goal — AI builds a phased roadmap with real resources, projects, and XP per stage.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🏗️</div>
+        <div class="feat-t">Suggested Projects</div>
+        <div class="feat-d">Each roadmap phase includes hands-on build projects with XP rewards. Learn by actually building things.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤖</div>
+        <div class="feat-t">Assignment Breakdown</div>
+        <div class="feat-d">Add any assignment and AI instantly breaks it into 5 concrete, actionable steps so you know exactly what to do.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⏱️</div>
+        <div class="feat-t">Focus Timer</div>
+        <div class="feat-d">Built-in Pomodoro timer. Select a task, start the 25-minute session, and earn XP when you finish.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🌱</div>
+        <div class="feat-t">Study Garden</div>
+        <div class="feat-d">Every task you complete grows a plant. Watch your garden bloom from seeds to cherry blossoms to ancient trees.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-t">Analytics + Streaks</div>
+        <div class="feat-d">Daily completion charts, XP history, streak calendar, and 12 achievements to unlock as you progress.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL PROOF -->
+  <section style="padding:40px 32px;text-align:center;border-bottom:3px solid var(--border);">
+    <div class="feat-tag" style="margin-bottom:18px;">🌸 STUDENTS LOVE IT</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:680px;margin:0 auto;">
+      <div class="testimonial" style="margin-top:0;">
+        <div class="test-text">"The roadmap + XP system is genuinely addicting. I finished my React learning path in 6 weeks just to hit max level."</div>
+        <div class="test-author"><div class="test-ava" style="background:var(--pink);">KL</div><div><div class="test-name">Kira Lim</div><div class="test-role">3rd year CS</div></div></div>
+      </div>
+      <div class="testimonial" style="margin-top:0;">
+        <div class="test-text">"The AI breakdown feature is 🤯. I added my thesis and it gave me 5 exact steps. I started immediately."</div>
+        <div class="test-author"><div class="test-ava" style="background:var(--mint);">MR</div><div><div class="test-name">Marco Reyes</div><div class="test-role">4th year Engineering</div></div></div>
+      </div>
+      <div class="testimonial" style="margin-top:0;">
+        <div class="test-text">"The study garden is so cute I actually complete tasks just to grow more plants. Highly recommend."</div>
+        <div class="test-author"><div class="test-ava" style="background:var(--peach);">AS</div><div><div class="test-name">Ana Santos</div><div class="test-role">2nd year Biology</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="padding:48px 32px;text-align:center;">
+    <div style="font-family:var(--px);font-size:12px;color:var(--text);line-height:2;margin-bottom:10px;">ready to level up?</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:24px;">Free forever. No credit card needed. Just less procrastinating.</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a class="px-btn pink" href="login.html?tab=signup">create free account 🌸</a>
+      <button class="px-btn ghost" onclick="demoLogin()">explore demo →</button>
+    </div>
+  </section>
+
+  <footer class="land-footer">
+    🌱 StudySprint · Built for students, by students · © 2026
+  </footer>
+
+</div><!-- .land -->
+
+</body>
+</html>

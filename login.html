@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudySprint — Log In or Sign Up</title>
+<meta name="description" content="Log in or create your free StudySprint account to start building AI-powered learning roadmaps.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/garden.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/roadmap.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    initPublicPage();
+    // Auto-switch to signup tab if ?tab=signup in URL
+    const tab = new URLSearchParams(location.search).get('tab');
+    if (tab === 'signup') switchAuthTab('signup');
+  });
+
+  function switchAuthTab(tab) {
+    const isLogin  = tab === 'login';
+    document.getElementById('login-panel').style.display  = isLogin  ? '' : 'none';
+    document.getElementById('signup-panel').style.display = !isLogin ? '' : 'none';
+    document.getElementById('auth-tab-login').classList.toggle('active',  isLogin);
+    document.getElementById('auth-tab-signup').classList.toggle('active', !isLogin);
+  }
+
+  // Allow Enter key to submit forms
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const active = document.querySelector('#login-panel:not([style*="none"])');
+    if (active) doLogin();
+    else doSignup();
+  });
+</script>
+</head>
+<body>
+
+<div id="toast"></div>
+<div class="xp-pop" id="xp-pop">+XP</div>
+
+<div class="auth-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="auth-deco" style="top:-20px;right:-15px;">🌱</div>
+    <div class="auth-deco" style="bottom:-15px;left:-15px;">🌸</div>
+    <div style="position:relative;z-index:1;">
+      <a class="brand" href="index.html" style="text-decoration:none;margin-bottom:26px;display:flex;">
+        <div class="brand-icon">🌱</div>
+        <span class="brand-name">StudySprint</span>
+      </a>
+      <div class="auth-h">level up your studies 🌸</div>
+      <div class="auth-sub">Join students who actually finish what they start.</div>
+      <div style="margin-top:6px;">
+        <div class="feat-check-row"><div class="feat-chk">✓</div>AI roadmaps with real resources + XP</div>
+        <div class="feat-check-row"><div class="feat-chk">✓</div>Assignment breakdown in seconds</div>
+        <div class="feat-check-row"><div class="feat-chk">✓</div>Built-in Pomodoro focus timer</div>
+        <div class="feat-check-row"><div class="feat-chk">✓</div>Study garden that grows with you</div>
+        <div class="feat-check-row"><div class="feat-chk">✓</div>Analytics, streaks & achievements</div>
+      </div>
+      <div class="testimonial">
+        <div class="test-text">"The roadmap + XP system is genuinely addicting. I finished my React learning path in 6 weeks just to hit max level."</div>
+        <div class="test-author">
+          <div class="test-ava">KL</div>
+          <div><div class="test-name">Kira Lim</div><div class="test-role">3rd year CS</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <a class="px-btn ghost sm" href="index.html" style="margin-bottom:20px;align-self:flex-start;">← back</a>
+
+    <!-- Tab Switcher -->
+    <div style="display:flex;border:3px solid var(--text);margin-bottom:20px;">
+      <button id="auth-tab-login"  class="px-btn active" style="flex:1;justify-content:center;border:none;box-shadow:none;background:var(--lav);" onclick="switchAuthTab('login')">log in</button>
+      <button id="auth-tab-signup" class="px-btn" style="flex:1;justify-content:center;border:none;box-shadow:none;background:var(--white);border-left:3px solid var(--text);" onclick="switchAuthTab('signup')">sign up</button>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div id="login-panel">
+      <div class="auth-h">welcome back 👋</div>
+      <div class="auth-sub">Enter your credentials to continue.</div>
+
+      <div class="form-grp">
+        <label class="form-lbl" for="li-email">email</label>
+        <input class="px-input" id="li-email" type="email" placeholder="you@school.edu" autocomplete="email">
+      </div>
+      <div class="form-grp">
+        <label class="form-lbl" for="li-pw">password</label>
+        <input class="px-input" id="li-pw" type="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="form-err" id="li-err"></div>
+      <button class="px-btn pink" style="width:100%;justify-content:center;" id="li-btn" onclick="doLogin()">log in →</button>
+
+      <div class="divider"><div class="divider-line"></div><span class="divider-txt">or</span><div class="divider-line"></div></div>
+      <button class="px-btn ghost" style="width:100%;justify-content:center;" onclick="demoLogin()">✨ explore demo (no account needed)</button>
+
+      <div class="auth-switch" style="margin-top:14px;">
+        No account? <span onclick="switchAuthTab('signup')">sign up free</span>
+      </div>
+    </div>
+
+    <!-- SIGNUP PANEL -->
+    <div id="signup-panel" style="display:none;">
+      <div class="auth-h">create account 🌸</div>
+      <div class="auth-sub">Takes 30 seconds. Free forever.</div>
+
+      <div class="form-row-2">
+        <div class="form-grp">
+          <label class="form-lbl" for="su-fn">first name *</label>
+          <input class="px-input" id="su-fn" placeholder="Juan" autocomplete="given-name">
+        </div>
+        <div class="form-grp">
+          <label class="form-lbl" for="su-ln">last name</label>
+          <input class="px-input" id="su-ln" placeholder="dela Cruz" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="form-grp">
+        <label class="form-lbl" for="su-email">school email *</label>
+        <input class="px-input" id="su-email" type="email" placeholder="you@school.edu" autocomplete="email">
+      </div>
+      <div class="form-grp">
+        <label class="form-lbl" for="su-pw">password * <span style="font-size:9px;font-family:var(--body);color:var(--text3);">(8+ characters)</span></label>
+        <input class="px-input" id="su-pw" type="password" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="form-grp">
+        <label class="form-lbl" for="su-school">school / university</label>
+        <input class="px-input" id="su-school" placeholder="UP Diliman, DLSU, Ateneo...">
+      </div>
+      <div class="form-err"  id="su-err"></div>
+      <div class="form-info" id="su-info"></div>
+      <button class="px-btn pink" style="width:100%;justify-content:center;" id="su-btn" onclick="doSignup()">create account — free 🌸</button>
+
+      <div class="divider"><div class="divider-line"></div><span class="divider-txt">or</span><div class="divider-line"></div></div>
+      <button class="px-btn ghost" style="width:100%;justify-content:center;" onclick="demoLogin()">✨ try demo first</button>
+
+      <div class="auth-switch" style="margin-top:14px;">
+        Already have an account? <span onclick="switchAuthTab('login')">log in</span>
+      </div>
+    </div>
+
+  </div><!-- .auth-right -->
+</div><!-- .auth-wrap -->
+
+</body>
+</html>
